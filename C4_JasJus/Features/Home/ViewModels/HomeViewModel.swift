@@ -10,7 +10,8 @@ import Combine
 import SwiftUI
 import MapKit
 
-class HomeViewModel: Observable {
+@Observable
+class HomeViewModel {
     var sessionState: HomeSessionState
     var remainingTime: String = "00:00:00"
     var showSearchSheet = false
