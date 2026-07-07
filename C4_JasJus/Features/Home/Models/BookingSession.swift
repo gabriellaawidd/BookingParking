@@ -6,3 +6,14 @@
 //
 
 import Foundation
+
+struct BookingSession: Identifiable {
+    let id: UUID = UUID()
+    let mallName: String
+    let floor: String
+    let zone: String
+    let slot: String
+    let bookingDateTime: Date
+    let sessionEndDate: Date
+    let staffNumber: String
+}

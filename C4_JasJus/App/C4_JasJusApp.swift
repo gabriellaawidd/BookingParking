@@ -6,7 +6,7 @@ struct C4_JasJusApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootTabView(selectedTab: $selectedTab)
+            RootTabView(selectedTab: $selectedTab, viewModel: HomeViewModel())
         }
     }
 }

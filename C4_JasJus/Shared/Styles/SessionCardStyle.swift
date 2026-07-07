@@ -7,12 +7,23 @@
 
 import SwiftUI
 
-struct SessionCardStyle: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+struct SessionCardStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, 24)
+            .padding(.top, 24)
+            .padding(.bottom, 16)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(Color(.systemBackground))
+                    .shadow(color: .black.opacity(0.1), radius: 10, y: -2)
+            )
     }
 }
 
-#Preview {
-    SessionCardStyle()
+extension View {
+    func sessionCardStyle() -> some View {
+        modifier(SessionCardStyle())
+    }
 }

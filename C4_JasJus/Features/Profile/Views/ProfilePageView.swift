@@ -26,3 +26,7 @@ struct ProfilePageView: View {
         .padding(.bottom, 12)
     }
 }
+
+#Preview {
+    ProfilePageView()
+}
