@@ -112,7 +112,9 @@ struct BookingDetailsView: View {
         Menu {
             ForEach(router.vehicles) { vehicle in
                 Button {
-                    viewModel.selectedVehicle = vehicle
+                    withAnimation(.easeOut(duration: 0.2)){
+                        viewModel.selectedVehicle = vehicle
+                    }
                 } label: {
                     Label("\(vehicle.name) (\(vehicle.licensePlate))", systemImage: "car.fill")
                 }
@@ -125,33 +127,21 @@ struct BookingDetailsView: View {
             }
         } label: {
             VehiclePickerCard(vehicle: viewModel.selectedVehicle)
-//            BookingRow(
-//                icon: "car.fill",
-//                title: viewModel.selectedVehicle?.name ?? "Vehicle",
-//                trailingIcon: "chevron.up.chevron.down",
-//                isPlaceholder: viewModel.selectedVehicle == nil
-//            )
         }
     }
-
+    
     private var slotPicker: some View {
         Button {
             router.push(.chooseParkingSlot(viewModel.mall))
         } label: {
-            BookingRow(
-                icon: "p.square.fill",
-                title: viewModel.selectedSlot ?? "Slot",
-                trailingIcon: "chevron.right",
-                isPlaceholder: viewModel.selectedSlot == nil
+            SlotPickerCard(
+                slotCode: viewModel.selectedSlot,
+                timeRangeLabel: viewModel.timeRangeLabel,
+                dayRangeLabel: viewModel.dayRangeLabel
             )
         }
     }
-        
-    private var slotRowTitle: String {
-        guard let slot = viewModel.selectedSlot else { return "Slot" }
-        return "\(slot) • \(viewModel.timeRangeLabel)"
-    }
-
+    
     // MARK: - Voucher
     private var paymentDetailsSection: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -249,25 +239,27 @@ struct VehiclePickerCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            iconBox
+            iconBoxVehicle
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Vehicle")
-                    .font(.caption2)
-                    .foregroundColor(.gray)
 
                 if let vehicle = vehicle {
                     Text(vehicle.name)
-                        .font(.subheadline.bold())
+                        .font(.subheadline)
                         .foregroundColor(.primary)
+                    
                     Text(vehicle.licensePlate)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                        .font(.caption.bold())
+                        .foregroundColor(.black)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(Color(.systemGray5))
                         .cornerRadius(4)
                 } else {
+                    Text("Vehicle")
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                    
                     Text("Select a vehicle")
                         .font(.subheadline.bold())
                         .foregroundColor(.gray)
@@ -281,18 +273,19 @@ struct VehiclePickerCard: View {
                 .foregroundColor(.gray)
         }
         .padding(12)
+        .frame(height: 68)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.systemBackground))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(vehicle == nil ? Color.gray.opacity(0.3) : Color.blue.opacity(0.4), lineWidth: 1.5)
+                .stroke(vehicle == nil ? Color.gray.opacity(0.3) : Color.blue.opacity(0.4))
+                .animation(.easeInOut(duration: 0.2), value: vehicle)
         )
-        .animation(.easeInOut(duration: 0.2), value: vehicle)
     }
 
-    private var iconBox: some View {
+    private var iconBoxVehicle: some View {
         Image(systemName: "car.fill")
             .font(.system(size: 18))
             .foregroundColor(.white)
@@ -301,6 +294,90 @@ struct VehiclePickerCard: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(vehicle == nil ? Color.gray.opacity(0.5) : Color(red: 0.05, green: 0.2, blue: 0.4))
             )
+            .animation(.easeInOut(duration: 0.2), value: vehicle)
+    }
+}
+
+// MARK: - Slot Picker Card
+struct SlotPickerCard: View {
+    let slotCode: String?
+    let timeRangeLabel: String
+    let dayRangeLabel: String
+
+    var body: some View {
+        HStack(spacing: 14) {
+            iconBoxSlot
+
+            VStack(alignment: .leading, spacing: 2) {
+
+                if let slotCode = slotCode {
+                    Text(slotCode)
+                        .font(.subheadline.bold())
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .padding(.bottom, 2)
+                    
+                    HStack{
+                        Text(dayRangeLabel)
+                            .font(.caption2.bold())
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color(.systemGray5))
+                            .cornerRadius(4)
+                        
+                        Text(timeRangeLabel)
+                            .font(.caption.bold())
+                            .foregroundStyle(.black)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color(.systemGray5))
+                            .cornerRadius(4)
+                    }
+
+                    
+                } else {
+                    Text("Slot")
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                    
+                    Text("Select a slot")
+                        .font(.subheadline.bold())
+                        .foregroundColor(.gray)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 72)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(slotCode == nil ? Color.gray.opacity(0.3) : Color.blue.opacity(0.4), lineWidth: 1.5)
+                .animation(.easeInOut(duration: 0.2), value: slotCode)
+        )
+    }
+
+    private var iconBoxSlot: some View {
+    Image(systemName: "parkingsign")
+        .font(.system(size: 18, weight: .bold))
+        .foregroundColor(.white)
+        .frame(width: 44, height: 44)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(slotCode == nil ? Color.gray.opacity(0.5) : Color(red: 0.05, green: 0.2, blue: 0.4))
+        )
+        .animation(.easeInOut(duration: 0.2), value: slotCode)
     }
 }
 

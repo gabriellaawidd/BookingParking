@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct C4_JasJusApp: App {
+struct BookingParkingApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()

@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct Mall: Identifiable, Hashable {
-    let id = UUID()
+struct Mall: Identifiable, Hashable, Codable {
+    let id : UUID
     let name: String
     let address: String
     let distance: String
@@ -20,6 +20,7 @@ struct Mall: Identifiable, Hashable {
 
 extension Mall {
     static let sample = Mall(
+        id: UUID(),
         name: "AEON Mall BSD City",
         address: "BSD Grand Boulevard Rd, Pagedangan, BSD City, Tangerang Selatan 15339",
         distance: "500m",
@@ -29,5 +30,8 @@ extension Mall {
         imageName: "aeon_mall"
     )
 
-    static let recentList: [Mall] = [.sample, .sample]
+    static let recentList: [Mall] = [
+        Mall(id: UUID(), name: "AEON Mall BSD City", address: "BSD Grand Boulevard Rd, Pagedangan, BSD City, Tangerang Selatan 15339", distance: "500m", pricePerHour: 5000, rating: 4.8, reviewCount: 120, imageName: "aeon_mall"),
+        Mall(id: UUID(), name: "AEON Mall BSD City", address: "BSD Grand Boulevard Rd, Pagedangan, BSD City, Tangerang Selatan 15339", distance: "500m", pricePerHour: 5000, rating: 4.8, reviewCount: 120, imageName: "aeon_mall")
+        ]
 }
