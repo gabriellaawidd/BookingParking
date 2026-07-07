@@ -39,10 +39,6 @@ struct TicketPageView: View {
 //                    .padding(.bottom, 100) // ruang supaya tidak ketutup tab bar
                 }
             }
-
-            HomeTabBarPill()
-                .padding(.horizontal)
-                .padding(.bottom, 12)
         }
         .navigationBarHidden(true)
     }

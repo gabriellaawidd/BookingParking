@@ -4,7 +4,7 @@ import MapKit
 import Combine
 
 struct HomePageView: View {
-    @EnvironmentObject var router: AppRouter
+    @Binding var selectedTab: String
     @StateObject private var locationManager = LocationManager()
     @State private var showSearchSheet = false
 
@@ -23,7 +23,7 @@ struct HomePageView: View {
     )
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack(alignment: .bottomTrailing) {
             Map(position: $cameraPosition) {
                 UserAnnotation()
             }
@@ -32,12 +32,18 @@ struct HomePageView: View {
             }
             .ignoresSafeArea()
 
-            VStack(spacing: 12) {
+            VStack {
+                Spacer()
                 statusCard
-                bottomControls
             }
             .padding(.horizontal)
             .padding(.bottom, 12)
+
+            SearchFabButton {
+                showSearchSheet = true
+            }
+            .padding(.trailing, 16)
+            .padding(.bottom, 100)
         }
         .navigationBarHidden(true)
         .sheet(isPresented: $showSearchSheet) {
@@ -66,17 +72,6 @@ struct HomePageView: View {
             ActiveSessionCard(info: booking)
         } else {
             NoActiveSessionCard()
-        }
-    }
-
-    // MARK: - Tab bar pill + search FAB
-    private var bottomControls: some View {
-        HStack(alignment: .bottom, spacing: 12) {
-            HomeTabBarPill()
-            Spacer()
-            SearchFabButton {
-                showSearchSheet = true
-            }
         }
     }
 }
@@ -138,7 +133,6 @@ struct ActiveSessionCard: View {
             HStack {
                 Spacer()
                 Button {
-                    // call staff action
                 } label: {
                     Label("Call Staff", systemImage: "phone.fill")
                         .font(.subheadline.bold())
@@ -162,50 +156,6 @@ struct ActiveSessionCard: View {
     }
 }
 
-struct HomeTabBarPill: View {
-//    @State private var selectedTab: String = "Home"
-    @EnvironmentObject var router: AppRouter
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Button {
-                router.selectedTab = "Home"
-                router.popToRoot()
-            } label: {
-                TabItem(icon: "house.fill", title: "Home", isSelected: router.selectedTab == "Home")
-            }
-            .buttonStyle(PressableButtonStyle())
-
-            Spacer()
-
-            Button {
-                router.selectedTab = "Ticket"
-                router.popToRoot()
-                router.push(.ticket)
-            } label: {
-                TabItem(icon: "ticket.fill", title: "Ticket", isSelected: router.selectedTab == "Ticket")
-            }
-            .buttonStyle(PressableButtonStyle())
-
-            Spacer()
-
-            Button {
-                router.selectedTab = "Profile"
-                router.popToRoot()
-                router.push(.profile)
-            } label: {
-                TabItem(icon: "person.fill", title: "Profile", isSelected: router.selectedTab == "Profile")
-            }
-            .buttonStyle(PressableButtonStyle())
-        }
-        .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity)
-        .frame(height: 60)
-        .glassEffect(.regular, in: .capsule)
-    }
-}
-
-
 struct SearchFabButton: View {
     let action: () -> Void
 
@@ -220,23 +170,6 @@ struct SearchFabButton: View {
     }
 }
 
-struct TabItem: View {
-    let icon: String
-    let title: String
-    let isSelected: Bool
-
-    var body: some View {
-        VStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 16))
-            Text(title)
-                .font(.system(size: 10))
-        }
-        .foregroundColor(.primary)
-        .frame(width: 72, height: 48)
-        .background(
-            Capsule()
-                .fill(isSelected ? Color(.systemGray6) : Color.clear)
-        )
-    }
+#Preview {
+    RootTabView(selectedTab: .constant("Home"))
 }

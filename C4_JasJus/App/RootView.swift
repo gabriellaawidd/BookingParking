@@ -4,10 +4,11 @@ import Combine
 
 struct RootView: View {
     @StateObject var router = AppRouter()
+    @State private var selectedTab: String = "Home"
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            HomePageView()
+            HomePageView(selectedTab: $selectedTab)
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case .bookingDetails(let mall):
