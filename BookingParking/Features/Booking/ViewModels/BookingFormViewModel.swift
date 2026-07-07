@@ -1,46 +1,34 @@
-import Foundation
-import Combine
 
-@MainActor
-final class BookingFormViewModel: ObservableObject {
+import Foundation
+
+@Observable
+class BookingFormViewModel {
     let mall: Mall
 
-    @Published var selectedVehicle: Vehicle?
-    @Published var availableVehicles: [Vehicle] = []
-    @Published var isLoadingVehicles: Bool = false
+    var vehicles: [Vehicle] = Vehicle.registered
+    var selectedVehicle: Vehicle?
 
-    @Published var selectedSlot: String?
-    @Published var selectedVoucher: String?
-    @Published var startTime: Date?
-    @Published var endTime: Date?
-    @Published var durationHours: Int = 2
-    @Published var bookingDate: Date?
+    var selectedSlot: String?
+    var selectedVoucher: String?
+    var startTime: Date?
+    var endTime: Date?
+    var bookingDate: Date?
 
-    @Published var isSubmitting: Bool = false
-    @Published var errorMessage: String?
+    var isSubmitting = false
+    var errorMessage: String?
 
-    private let vehicleService: VehicleServiceProtocol
-
-    init(mall: Mall, vehicleService: VehicleServiceProtocol = MockVehicleService()) {
+    init(mall: Mall) {
         self.mall = mall
-        self.vehicleService = vehicleService
-        loadVehicles()
-    }
-
-    func loadVehicles() {
-        Task {
-            isLoadingVehicles = true
-            defer { isLoadingVehicles = false }
-            do {
-                availableVehicles = try await vehicleService.fetchVehicles()
-            } catch {
-                errorMessage = error.localizedDescription
-            }
-        }
     }
 
     var isFormValid: Bool {
         selectedVehicle != nil && selectedSlot != nil
+    }
+
+    var durationHours: Int {
+        guard let startTime, let endTime else { return 1 }
+        let minutes = Calendar.current.dateComponents([.minute], from: startTime, to: endTime).minute ?? 0
+        return max(Int(ceil(Double(minutes) / 60.0)), 1)
     }
 
     var total: Int {
@@ -48,38 +36,49 @@ final class BookingFormViewModel: ObservableObject {
     }
 
     var durationLabel: String {
-        guard let startTime = startTime, let endTime = endTime else { return "\(durationHours) hours" }
+        guard let startTime, let endTime else { return "-" }
         let components = Calendar.current.dateComponents([.hour, .minute], from: startTime, to: endTime)
         let hours = components.hour ?? 0
         let minutes = components.minute ?? 0
-        return "\(hours) hours, \(minutes) minutes"
+        return minutes == 0 ? "\(hours) hours" : "\(hours)h \(minutes)m"
     }
 
     var timeRangeLabel: String {
-        guard let startTime = startTime, let endTime = endTime else { return "-" }
+        guard let startTime, let endTime else { return "-" }
         let formatter = DateFormatter()
         formatter.dateFormat = "HH.mm"
         return "\(formatter.string(from: startTime)) - \(formatter.string(from: endTime))"
     }
-    
-    var dateLabel: String {
-        guard let date = bookingDate else { return "-" }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM yyyy"
-        return formatter.string(from: date)
-    }
-    
-    var dayRangeLabel: String {
-        guard let day = bookingDate else { return "-" }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM yyyy"
-        formatter.locale = Locale(identifier: "en_US")
-        return formatter.string(from: day)
 
+    var dateLabel: String {
+        guard let bookingDate else { return "-" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM yyyy"
+        return formatter.string(from: bookingDate)
+    }
+
+    var dayRangeLabel: String {
+        guard let bookingDate else { return "-" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, d MMM yyyy"
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(from: bookingDate)
+    }
+
+    func applySlotSelection(slotID: String, date: Date, start: Date, end: Date) {
+        selectedSlot = slotID
+        bookingDate = date
+        startTime = start
+        endTime = end
+    }
+
+    func addVehicle(_ vehicle: Vehicle) {
+        vehicles.append(vehicle)
+        selectedVehicle = vehicle
     }
 
     func submitBooking() async -> Booking? {
-        guard isFormValid, let vehicle = selectedVehicle, let slot = selectedSlot else { return nil }
+        guard isFormValid, let selectedVehicle, let selectedSlot else { return nil }
 
         isSubmitting = true
         errorMessage = nil
@@ -89,10 +88,10 @@ final class BookingFormViewModel: ObservableObject {
             try await Task.sleep(nanoseconds: 500_000_000)
             return Booking(
                 mall: mall,
-                date: dateLabel,              // <-- diisi dari bookingDate
+                date: dateLabel,
                 timeRange: timeRangeLabel,
-                slot: slot,
-                vehicle: vehicle,
+                slot: selectedSlot,
+                vehicle: selectedVehicle,
                 voucher: selectedVoucher,
                 paymentMethod: nil,
                 tariffPerHour: mall.pricePerHour,
@@ -102,28 +101,6 @@ final class BookingFormViewModel: ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
             return nil
-        }
-    }
-
-    func syncFromDraft(_ router: AppRouter) {
-        guard let slot = router.draftSlotID else { return }
-
-        selectedSlot = slot
-
-        if let date = router.draftDate {
-            bookingDate = date
-        }
-
-        if let start = router.draftStartTime, let end = router.draftEndTime {
-            startTime = start
-            endTime = end
-            let components = Calendar.current.dateComponents([.hour, .minute], from: start, to: end)
-            let totalMinutes = (components.hour ?? 0) * 60 + (components.minute ?? 0)
-            durationHours = max(Int(ceil(Double(totalMinutes) / 60.0)), 1)
-//            durationHours = max(totalMinutes, 60) / 60  //INI
-            
-//            let hours = Calendar.current.dateComponents([.hour], from: start, to: end).hour ?? 1
-//            durationHours = max(hours, 1)   // minimal 1 jam, jaga2 kalau end < start
         }
     }
 }
