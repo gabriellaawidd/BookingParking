@@ -11,7 +11,6 @@ struct HomePageView: View {
         NavigationStack(path: $viewModel.navigationPath) {
             ZStack(alignment: .bottom) {
                 Map(position: $viewModel.cameraPosition) { UserAnnotation() }
-                    .mapControls { MapUserLocationButton() }
                     .ignoresSafeArea()
 
                 VStack(spacing: 12) { sessionCard }
