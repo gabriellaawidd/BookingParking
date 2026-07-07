@@ -16,6 +16,9 @@ class HomeViewModel {
     var remainingTime: String = "00:00:00"
     var showSearchSheet = false
     var cameraPosition: MapCameraPosition
+    var navigationPath = NavigationPath()
+    var pendingMallDetail: MallLocation?
+    var selectedMall: MallLocation?
     
     private var timerCancellable: AnyCancellable?
     
