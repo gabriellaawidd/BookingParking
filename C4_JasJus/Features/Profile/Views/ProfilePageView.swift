@@ -12,10 +12,6 @@ struct ProfilePageView: View {
                 .foregroundColor(.gray)
             Spacer()
         }
-        HomeTabBarPill()
-            .padding(.horizontal)
-            .padding(.bottom, 12)
-        .navigationBarHidden(true)
     }
 
     private var header: some View {

@@ -2,9 +2,11 @@ import SwiftUI
 
 @main
 struct C4_JasJusApp: App {
+    @State private var selectedTab: String = "Home"
+    
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootTabView(selectedTab: $selectedTab)
         }
     }
 }
