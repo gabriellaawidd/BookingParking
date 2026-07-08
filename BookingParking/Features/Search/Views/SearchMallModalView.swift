@@ -88,7 +88,7 @@ struct SearchMallModalView: View {
             List(viewModel.results) { mall in
                 Button {
                     onSelectMall(mall)
-                    dismiss()   // <- sheet search langsung nutup diri sendiri
+                    dismiss() 
                 } label: {
                     MallCard(mall: mall)
                 }

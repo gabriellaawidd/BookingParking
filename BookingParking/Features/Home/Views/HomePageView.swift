@@ -6,16 +6,42 @@ struct HomePageView: View {
     @State var viewModel: HomeViewModel
     @State private var locationManager = LocationManager()
     @Environment(\.openURL) private var openURL
-
+    
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
-            ZStack(alignment: .bottom) {
-                Map(position: $viewModel.cameraPosition) { UserAnnotation() }
-                    .ignoresSafeArea()
-
-                VStack(spacing: 12) { sessionCard }
-                    .padding(.horizontal)
-                    .padding(.bottom, 12)
+            ZStack(alignment: .top) {
+                Map(position: $viewModel.cameraPosition, selection: $viewModel.selectedMallID) {
+                    UserAnnotation()
+                    
+                    ForEach(viewModel.mapMalls) { mall in
+                        Marker(mall.name, systemImage: "bag.fill", coordinate: mall.coordinate)
+                            .tint(.orange)
+                            .tag(mall.id)
+                        }
+                    }
+                .ignoresSafeArea()
+                .onChange(of: viewModel.selectedMallID) { _, newID in
+                    guard let newID, let mall = viewModel.mapMalls.first(where: {
+                        $0.id == newID
+                    })
+                    else {
+                        return
+                    }
+                    viewModel.selectedMall = mall
+                    viewModel.selectedMallID = nil
+                }
+                
+                VStack {
+                    topSearchBar
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                    
+                    Spacer()
+                    
+                    sessionCard
+                        .padding(.horizontal)
+                        .padding(.bottom, 12)
+                }
             }
             .navigationBarHidden(true)
             .navigationDestination(for: MallLocation.self) { mall in
@@ -44,8 +70,12 @@ struct HomePageView: View {
             }
             .presentationDetents([.height(420)])
             .presentationDragIndicator(.visible)
+            .presentationBackground(.regularMaterial)
         }
         .onAppear { locationManager.requestLocation() }
+        .task {
+            await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
+        }
         .onReceive(locationManager.$currentLocation) { newLocation in
             guard let coordinate = newLocation else { return }
             withAnimation {
@@ -56,20 +86,46 @@ struct HomePageView: View {
             }
         }
     }
-
+    
+    private var topSearchBar: some View {
+        Button {
+            viewModel.showSearchSheet = true
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                
+                Text("Search mall")
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+            }
+            .padding(12)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .shadow(color: .black.opacity(0.08), radius: 6, y: 2)
+        }
+        .buttonStyle(.plain)
+    }
+    
     @ViewBuilder
     private var sessionCard: some View {
         switch viewModel.sessionState {
         case .empty:
-            EmptySessionCard { viewModel.showSearchSheet = true }
+            EmptySessionCard {
+                viewModel.showSearchSheet = true
+            }
         case .upcoming(let session):
             UpcomingSessionCard(session: session,
-                                 onNavigate: { viewModel.openMaps(for: session) },
-                                 onCallStaff: { viewModel.callStaff(phoneNumber: session.staffNumber, openURL: openURL) })
+                                onNavigate: {
+                viewModel.openMaps(for: session)
+            },
+                                onCallStaff: {
+                viewModel.callStaff(phoneNumber: session.staffNumber, openURL: openURL)
+            })
         case .active(let session):
             ActiveSessionCard(session: session, remainingTime: viewModel.remainingTime,
-                               onOpenSlot: { viewModel.openSlot() },
-                               onCallStaff: { viewModel.callStaff(phoneNumber: session.staffNumber, openURL: openURL) })
+                              onOpenSlot: { viewModel.openSlot() },
+                              onCallStaff: { viewModel.callStaff(phoneNumber: session.staffNumber, openURL: openURL) })
         }
     }
 }
