@@ -1,47 +1,38 @@
+
 import SwiftUI
-import Combine
 
 struct BookingDetailsView: View {
-    @EnvironmentObject var router: AppRouter
-    @StateObject private var viewModel: BookingFormViewModel
-
-    init(mall: Mall) {
-        _viewModel = StateObject(wrappedValue: BookingFormViewModel(mall: mall))
-    }
+    @Binding var path: NavigationPath
+    @State var viewModel: BookingFormViewModel
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
             headerImage
-            
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     mallInfoSection
-                    
-                    Divider()
-                        .padding(.vertical, 16)
-                    
+
+                    Divider().padding(.vertical, 16)
+
                     bookingDetailsSection
-                    
-                    Divider()
-                        .padding(.vertical, 16)
-                    
+
+                    Divider().padding(.vertical, 16)
+
                     paymentDetailsSection
-                    
-                    lateFeeBanner
-                        .padding(.top, 24)
+
+                    lateFeeBanner.padding(.top, 24)
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 20)
             }
-            
+
             bottomBar
         }
         .navigationBarHidden(true)
-        .onAppear {
-            viewModel.syncFromDraft(router)
-        }
     }
-    // MARK: - Header image + back button
+
     private var headerImage: some View {
         ZStack(alignment: .topLeading) {
             Rectangle()
@@ -56,7 +47,7 @@ struct BookingDetailsView: View {
                 )
 
             Button {
-                router.pop()
+                dismiss()
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.headline)
@@ -70,7 +61,6 @@ struct BookingDetailsView: View {
         }
     }
 
-    // MARK: - Nama mall, alamat, harga
     private var mallInfoSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
@@ -97,7 +87,6 @@ struct BookingDetailsView: View {
         .padding(.top, 20)
     }
 
-    // MARK: - Vehicle & Slot
     private var bookingDetailsSection: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Booking Details")
@@ -110,18 +99,16 @@ struct BookingDetailsView: View {
 
     private var vehiclePicker: some View {
         Menu {
-            ForEach(router.vehicles) { vehicle in
+            ForEach(viewModel.vehicles) { vehicle in
                 Button {
-                    withAnimation(.easeOut(duration: 0.2)){
-                        viewModel.selectedVehicle = vehicle
-                    }
+                    viewModel.selectedVehicle = vehicle
                 } label: {
                     Label("\(vehicle.name) (\(vehicle.licensePlate))", systemImage: "car.fill")
                 }
             }
             Divider()
-            Button {
-                router.push(.addVehicle)
+            NavigationLink {
+                AddVehicleView()
             } label: {
                 Label("Add Vehicle", systemImage: "plus")
             }
@@ -129,10 +116,13 @@ struct BookingDetailsView: View {
             VehiclePickerCard(vehicle: viewModel.selectedVehicle)
         }
     }
-    
+
     private var slotPicker: some View {
-        Button {
-            router.push(.chooseParkingSlot(viewModel.mall))
+        NavigationLink {
+            ChooseParkingSlotView(
+                bookingViewModel : viewModel,
+                viewModel: ParkingLotViewModel(mall: viewModel.mall)
+            )
         } label: {
             SlotPickerCard(
                 slotCode: viewModel.selectedSlot,
@@ -141,15 +131,14 @@ struct BookingDetailsView: View {
             )
         }
     }
-    
-    // MARK: - Voucher
+
     private var paymentDetailsSection: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Payment Details")
                 .font(.headline)
 
             Button {
-                // nanti navigasi ke halaman pilih voucher
+                // navigasi voucher, nanti
             } label: {
                 BookingRow(
                     icon: "ticket.fill",
@@ -161,14 +150,13 @@ struct BookingDetailsView: View {
         }
     }
 
-    // MARK: - Late fee warning banner
     private var lateFeeBanner: some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.red)
                 .fixedSize()
 
-            HStack(spacing:4){
+            HStack(spacing: 4) {
                 Text("Late Exit Fee! ").bold()
                 Text("Rp10,000/hour after parking expires.")
             }
@@ -183,7 +171,6 @@ struct BookingDetailsView: View {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Bottom bar: total + Pay Now
     private var bottomBar: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
@@ -199,17 +186,14 @@ struct BookingDetailsView: View {
 
             Button {
                 Task {
-                    if let booking = await viewModel.submitBooking() {
-                        router.currentBooking = booking
-//                        router.push(.bookingDetails(booking))
-                        router.popToRoot() 
+                    if let _ = await viewModel.submitBooking() {
+                        path.removeLast(path.count)
                     }
                 }
             } label: {
                 HStack(spacing: 6) {
                     if viewModel.isSubmitting {
-                        ProgressView()
-                            .tint(.white)
+                        ProgressView().tint(.white)
                     } else {
                         Image(systemName: viewModel.isFormValid ? "lock.open.fill" : "lock.fill")
                     }
@@ -233,7 +217,6 @@ struct BookingDetailsView: View {
     }
 }
 
-// MARK: - Vehicle Picker Card
 struct VehiclePickerCard: View {
     let vehicle: Vehicle?
 
@@ -297,8 +280,8 @@ struct VehiclePickerCard: View {
             .animation(.easeInOut(duration: 0.2), value: vehicle)
     }
 }
-
-// MARK: - Slot Picker Card
+//
+//// MARK: - Slot Picker Card
 struct SlotPickerCard: View {
     let slotCode: String?
     let timeRangeLabel: String
@@ -380,8 +363,8 @@ struct SlotPickerCard: View {
         .animation(.easeInOut(duration: 0.2), value: slotCode)
     }
 }
-
-// MARK: - Reusable Booking Row
+//
+//// MARK: - Reusable Booking Row
 struct BookingRow: View {
     let icon: String
     let title: String
@@ -400,5 +383,13 @@ struct BookingRow: View {
                 .foregroundColor(.gray)
                 .font(.caption)
         }
+    }
+}
+
+
+
+#Preview {
+    NavigationStack {
+        BookingDetailsView(path: .constant(NavigationPath()), viewModel: BookingFormViewModel(mall: .sample))
     }
 }

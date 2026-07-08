@@ -1,18 +1,15 @@
-// MARK: - ChooseParkingSlotView.swift
+
 import SwiftUI
 
 struct ChooseParkingSlotView: View {
-    @EnvironmentObject var router: AppRouter
-    @StateObject private var viewModel: ParkingLotViewModel
-    
+    @State var bookingViewModel: BookingFormViewModel
+    @State var viewModel: ParkingLotViewModel
+    @Environment(\.dismiss) private var dismiss
+
     @State private var isDateExpanded = false
     @State private var isStartTimeExpanded = false
     @State private var isEndTimeExpanded = false
     var minuteInterval: Int = 15
-
-    init(mall: Mall) {
-        _viewModel = StateObject(wrappedValue: ParkingLotViewModel(mall: mall))
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -43,7 +40,7 @@ struct ChooseParkingSlotView: View {
     private var header: some View {
         HStack(spacing: 14) {
             Button {
-                router.pop()
+                dismiss()
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.headline)
@@ -68,58 +65,57 @@ struct ChooseParkingSlotView: View {
     // MARK: - Date/time card
     private var dateTimeCard: some View {
         VStack(spacing: 0) {
-            DisclosureGroup(isExpanded: $isDateExpanded){
+            DisclosureGroup(isExpanded: $isDateExpanded) {
                 DatePicker("", selection: $viewModel.selectedDate, displayedComponents: .date)
                     .datePickerStyle(.graphical)
                     .labelsHidden()
                     .padding(.top, 4)
-                    .onChange(of: viewModel.selectedDate) {_, _ in
+                    .onChange(of: viewModel.selectedDate) { _, _ in
                         withAnimation {
                             isDateExpanded = false
                         }
                     }
-            }label: {
+            } label: {
                 dateTimeLabel(title: "Date", value: viewModel.dateLabel, systemImage: "calendar")
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
             Divider().padding(.leading, 46)
-            
-            DisclosureGroup(isExpanded: $isStartTimeExpanded){
+
+            DisclosureGroup(isExpanded: $isStartTimeExpanded) {
                 TimeIntervalBooking(selection: $viewModel.startTime, minuteInterval: minuteInterval)
                     .frame(height: 150)
                     .padding(.top, 4)
-                    .onChange(of: viewModel.startTime) {_, _ in
+                    .onChange(of: viewModel.startTime) { _, _ in
                         withAnimation {
                             isStartTimeExpanded = false
                         }
                     }
-            }label: {
-                dateTimeLabel(title: "Start Time", value: viewModel.startTimeLabel, systemImage: "calendar")
+            } label: {
+                dateTimeLabel(title: "Start Time", value: viewModel.startTimeLabel, systemImage: "clock")
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
             Divider().padding(.leading, 46)
-            
-            DisclosureGroup(isExpanded: $isEndTimeExpanded){
+
+            DisclosureGroup(isExpanded: $isEndTimeExpanded) {
                 TimeIntervalBooking(selection: $viewModel.endTime, minuteInterval: minuteInterval)
                     .frame(height: 150)
                     .padding(.top, 4)
-                    .onChange(of: viewModel.endTime) {_, _ in
+                    .onChange(of: viewModel.endTime) { _, _ in
                         withAnimation {
                             isEndTimeExpanded = false
                         }
                     }
-            }label: {
-                dateTimeLabel(title: "End Time", value: viewModel.endTimeLabel, systemImage: "calendar")
+            } label: {
+                dateTimeLabel(title: "End Time", value: viewModel.endTimeLabel, systemImage: "clock.badge.checkmark")
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
             Divider().padding(.leading, 46)
-
         }
         .background(
             RoundedRectangle(cornerRadius: 16)
@@ -269,11 +265,15 @@ struct ChooseParkingSlotView: View {
     // MARK: - Bottom bar
     private var reserveBar: some View {
         Button {
-            router.draftDate = viewModel.selectedDate
-            router.draftStartTime = viewModel.startTime
-            router.draftEndTime = viewModel.endTime
-            router.draftSlotID = viewModel.selectedSlotID
-            router.pop()
+            if let slot = viewModel.selectedSlotID {
+                bookingViewModel.applySlotSelection(
+                    slotID: slot,
+                    date: viewModel.selectedDate,
+                    start: viewModel.startTime,
+                    end: viewModel.endTime
+                )
+            }
+            dismiss()
         } label: {
             Text(viewModel.selectedSlotID == nil ? "Select a Slot" : "Reserve Parking")
                 .font(.headline)
