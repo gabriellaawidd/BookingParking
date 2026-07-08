@@ -12,7 +12,7 @@ struct SessionCardStyle: ViewModifier {
         content
             .padding(.horizontal, 24)
             .padding(.top, 24)
-            .padding(.bottom, 16)
+            .padding(.bottom, 24)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 28)

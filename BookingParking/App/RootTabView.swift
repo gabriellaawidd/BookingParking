@@ -29,18 +29,6 @@ struct RootTabView: View {
                     ProfilePageView()
                 }
             }
-
-            Tab("Search", systemImage: "magnifyingglass", value: "Search") {
-                Color.clear
-            }
-        }
-        .onChange(of: selectedTab) { oldValue, newValue in
-            if newValue == "Search" {
-                viewModel.showSearchSheet = true
-                selectedTab = previousTab
-            } else {
-                previousTab = newValue
-            }
         }
     }
 }

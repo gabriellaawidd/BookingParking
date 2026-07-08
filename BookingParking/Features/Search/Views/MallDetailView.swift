@@ -29,6 +29,7 @@ struct MallDetailView: View {
     var body: some View {
         VStack(spacing: 16) {
             mapPreview
+                .padding(.top, 16)
 
             VStack(spacing: 6) {
                 Text(mall.name)
@@ -40,13 +41,14 @@ struct MallDetailView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
 
-                Text(pricePerHourText)
-                    .font(.headline.bold())
-                    .foregroundStyle(Color.accentColor)
-                    .padding(.top, 4)
             }
             .padding(.horizontal, 24)
-
+            
+            Text(pricePerHourText)
+                .font(.headline.bold())
+                .foregroundStyle(Color.accentColor)
+                .padding(.bottom, 4)
+            
             Button {
                 onBookNow(mall)
             } label: {
