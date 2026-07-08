@@ -2,7 +2,7 @@ import Foundation
 
 struct Booking: Identifiable, Hashable {
     let id = UUID()
-    var mall: Mall
+    var mall: MallLocation
     var date: String
     var timeRange: String
     var slot: String

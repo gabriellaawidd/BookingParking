@@ -3,7 +3,8 @@ import Foundation
 
 @Observable
 class BookingFormViewModel {
-    let mall: Mall
+    let mall: MallLocation
+    let pricePerHour: Int
 
     var vehicles: [Vehicle] = Vehicle.registered
     var selectedVehicle: Vehicle?
@@ -17,8 +18,9 @@ class BookingFormViewModel {
     var isSubmitting = false
     var errorMessage: String?
 
-    init(mall: Mall) {
+    init(mall: MallLocation, pricePerHour: Int = 5000) {
         self.mall = mall
+        self.pricePerHour = pricePerHour
     }
 
     var isFormValid: Bool {
@@ -32,7 +34,7 @@ class BookingFormViewModel {
     }
 
     var total: Int {
-        mall.pricePerHour * durationHours
+        pricePerHour * durationHours
     }
 
     var durationLabel: String {
@@ -94,7 +96,7 @@ class BookingFormViewModel {
                 vehicle: selectedVehicle,
                 voucher: selectedVoucher,
                 paymentMethod: nil,
-                tariffPerHour: mall.pricePerHour,
+                tariffPerHour: pricePerHour,
                 duration: durationLabel,
                 total: total
             )

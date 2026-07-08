@@ -19,7 +19,10 @@ struct HomePageView: View {
             }
             .navigationBarHidden(true)
             .navigationDestination(for: MallLocation.self) { mall in
-                // BookingDetailsView(mall: mall)
+                BookingDetailsView(
+                    path: $viewModel.navigationPath,
+                    viewModel: BookingFormViewModel(mall: mall)
+                )
             }
         }
         .sheet(isPresented: $viewModel.showSearchSheet, onDismiss: {
