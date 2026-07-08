@@ -2,7 +2,7 @@
 import SwiftUI
 
 struct SearchMallRow: View {
-    let mall: Mall
+    let mall: MallLocation
 
     var body: some View {
         HStack(spacing: 14) {
@@ -17,7 +17,7 @@ struct SearchMallRow: View {
                 Text(mall.name)
                     .font(.subheadline.bold())
                     .foregroundColor(.primary)
-                Text("\(mall.distance) · \(mall.address)")
+                Text("\(mall.distanceInMeters) · \(mall.address)")
                     .font(.caption)
                     .foregroundColor(.gray)
                     .lineLimit(1)

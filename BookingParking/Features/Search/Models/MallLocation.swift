@@ -38,3 +38,11 @@ extension CLLocationCoordinate2D: @retroactive Equatable, @retroactive Hashable 
         hasher.combine(longitude)
     }
 }
+
+extension MallLocation {
+    static let sample = MallLocation(
+        name: "AEON Mall BSD City",
+        address: "BSD Grand Boulevard Rd, Pagedangan, BSD City, Tangerang Selatan 15339",
+        coordinate: CLLocationCoordinate2D(latitude: -6.3025, longitude: 106.6524)
+    )
+}

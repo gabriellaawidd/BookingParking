@@ -68,7 +68,7 @@ struct BookingDetailsView: View {
                     .font(.title3.bold())
                 Spacer()
                 VStack(alignment: .trailing, spacing: 0) {
-                    Text("Rp \(viewModel.mall.pricePerHour.formattedThousands())")
+                    Text("Rp \(viewModel.pricePerHour.formattedThousands())")
                         .font(.headline)
                     Text("/ hour")
                         .font(.caption2)

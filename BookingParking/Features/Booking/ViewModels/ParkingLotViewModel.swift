@@ -3,7 +3,7 @@ import Foundation
 
 @Observable
 final class ParkingLotViewModel {
-    let mall: Mall
+    let mall: MallLocation
 
     var floorMap: FloorMap
     var selectedSlotID: String?
@@ -15,7 +15,7 @@ final class ParkingLotViewModel {
     // Layout untuk render (grid), dipisah dari data status
     let sections: [SlotSection]
 
-    init(mall: Mall,
+    init(mall: MallLocation,
          initialDate: Date = Date(),
          initialStart: Date = Date(),
          initialEnd: Date = Date().addingTimeInterval(3600),
