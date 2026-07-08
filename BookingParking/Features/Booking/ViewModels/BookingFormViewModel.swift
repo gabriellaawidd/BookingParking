@@ -22,6 +22,13 @@ class BookingFormViewModel {
         self.mall = mall
         self.pricePerHour = pricePerHour
     }
+    
+    var hasBooked: Bool {
+        if selectedSlot != nil && selectedVehicle != nil {
+            return true
+        }
+        return false
+    }
 
     var isFormValid: Bool {
         selectedVehicle != nil && selectedSlot != nil
@@ -38,7 +45,7 @@ class BookingFormViewModel {
     }
 
     var durationLabel: String {
-        guard let startTime, let endTime else { return "-" }
+        guard let startTime, let endTime else { return "" }
         let components = Calendar.current.dateComponents([.hour, .minute], from: startTime, to: endTime)
         let hours = components.hour ?? 0
         let minutes = components.minute ?? 0
@@ -46,7 +53,7 @@ class BookingFormViewModel {
     }
 
     var timeRangeLabel: String {
-        guard let startTime, let endTime else { return "-" }
+        guard let startTime, let endTime else { return "" }
         let formatter = DateFormatter()
         formatter.dateFormat = "HH.mm"
         return "\(formatter.string(from: startTime)) - \(formatter.string(from: endTime))"

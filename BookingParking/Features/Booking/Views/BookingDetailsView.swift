@@ -5,34 +5,38 @@ struct BookingDetailsView: View {
     @Binding var path: NavigationPath
     @State var viewModel: BookingFormViewModel
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
         VStack(spacing: 0) {
             headerImage
-
+            
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading) {
                     mallInfoSection
-
+                    
                     Divider().padding(.vertical, 16)
-
+                    
                     bookingDetailsSection
-
+                    
                     Divider().padding(.vertical, 16)
-
+                    
                     paymentDetailsSection
-
+                    
                     lateFeeBanner.padding(.top, 24)
+                    
                 }
                 .padding(.horizontal)
-                .padding(.bottom, 20)
+                
+                bottomBar
+                    .padding(.top, 24)
+
             }
-
-            bottomBar
         }
-        .navigationBarHidden(true)
+        .ignoresSafeArea()
+        .navigationBarHidden(false)
+        .toolbar(.hidden, for: .tabBar)
     }
-
+    
     private var headerImage: some View {
         ZStack(alignment: .topLeading) {
             Rectangle()
@@ -45,7 +49,7 @@ struct BookingDetailsView: View {
                         .foregroundColor(.gray.opacity(0.4))
                         .padding(60)
                 )
-
+            
             Button {
                 dismiss()
             } label: {
@@ -60,43 +64,39 @@ struct BookingDetailsView: View {
             .padding(.leading, 16)
         }
     }
-
+    
     private var mallInfoSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading) {
                 Text(viewModel.mall.name.uppercased())
                     .font(.title3.bold())
-                Spacer()
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text("Rp \(viewModel.pricePerHour.formattedThousands())")
-                        .font(.headline)
-                    Text("/ hour")
-                        .font(.caption2)
-                        .foregroundColor(.gray)
-                }
-            }
-
-            HStack(alignment: .top, spacing: 6) {
-                Image(systemName: "mappin.and.ellipse")
-                    .foregroundColor(.gray)
                 Text(viewModel.mall.address)
                     .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            VStack(alignment: .trailing) {
+                Text("Rp \(viewModel.pricePerHour.formattedThousands())")
+                    .font(.headline)
+                Text("/ hour")
+                    .font(.caption2)
                     .foregroundColor(.gray)
             }
         }
         .padding(.top, 20)
     }
-
+    
     private var bookingDetailsSection: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Booking Details")
                 .font(.headline)
-
+            
             vehiclePicker
             slotPicker
         }
     }
-
+    
     private var vehiclePicker: some View {
         Menu {
             ForEach(viewModel.vehicles) { vehicle in
@@ -116,7 +116,7 @@ struct BookingDetailsView: View {
             VehiclePickerCard(vehicle: viewModel.selectedVehicle)
         }
     }
-
+    
     private var slotPicker: some View {
         NavigationLink {
             ChooseParkingSlotView(
@@ -131,31 +131,28 @@ struct BookingDetailsView: View {
             )
         }
     }
-
+    
     private var paymentDetailsSection: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Payment Details")
                 .font(.headline)
-
-            Button {
-                // navigasi voucher, nanti
+            NavigationLink {
+                ChooseVoucherView()
             } label: {
-                BookingRow(
-                    icon: "ticket.fill",
-                    title: viewModel.selectedVoucher ?? "Voucher",
-                    trailingIcon: "chevron.right",
-                    isPlaceholder: viewModel.selectedVoucher == nil
-                )
+                VoucherPickerCard(voucherCode: nil, discountLabel: nil)
             }
+            
         }
-    }
 
+
+    }
+    
     private var lateFeeBanner: some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.red)
                 .fixedSize()
-
+            
             HStack(spacing: 4) {
                 Text("Late Exit Fee! ").bold()
                 Text("Rp10,000/hour after parking expires.")
@@ -164,26 +161,35 @@ struct BookingDetailsView: View {
             .foregroundColor(.primary)
             .fixedSize(horizontal: true, vertical: false)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 24)
         .padding(.vertical, 14)
         .background(Color.red.opacity(0.1))
         .cornerRadius(12)
         .frame(maxWidth: .infinity)
     }
-
-    private var bottomBar: some View {
+    
+    private var bottomBar: some View { //INI BENERIN LAGI
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("RP \(viewModel.total.formattedThousands())")
-                    .font(.title3.bold())
-                    .underline()
-                Text("\(viewModel.durationLabel) • \(viewModel.timeRangeLabel)")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                Text(viewModel.hasBooked ? "Rp \(viewModel.total.formattedThousands())" : "Rp 0")
+                    .font(.body)
+                
+                if viewModel.hasBooked {
+                        Text("\(viewModel.timeRangeLabel) (\(viewModel.durationLabel))")
+                        .font(.caption2.bold())
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color(.systemGray5))
+                            .cornerRadius(5)
+                }
+                
+                
             }
-
+//            .padding(.bottom, 1)
+            
             Spacer()
-
+            
             Button {
                 Task {
                     if let _ = await viewModel.submitBooking() {
@@ -194,8 +200,6 @@ struct BookingDetailsView: View {
                 HStack(spacing: 6) {
                     if viewModel.isSubmitting {
                         ProgressView().tint(.white)
-                    } else {
-                        Image(systemName: viewModel.isFormValid ? "lock.open.fill" : "lock.fill")
                     }
                     Text("Pay Now")
                 }
@@ -208,31 +212,90 @@ struct BookingDetailsView: View {
             }
             .disabled(!viewModel.isFormValid || viewModel.isSubmitting)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 16)
+        .padding(.horizontal, 30)
+        .padding(.top, 26)
+        .padding(.bottom, 26)
+        
         .background(
             Color(.systemBackground)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: -2)
+                .ignoresSafeArea(edges: .bottom)
         )
     }
 }
 
+struct VoucherPickerCard: View {
+    let voucherCode: String?
+    let discountLabel: String?
+    
+    var body: some View {
+        HStack(spacing: 14) {
+            iconBoxVoucher
+            
+            VStack(alignment: .leading, spacing: 2) {
+                
+                if let voucherCode = voucherCode {
+                    Text("Voucher")
+                    .font(.subheadline.bold())
+                        .foregroundColor(.black)
+                }
+                else{
+                    Text("Voucher")
+                        .font(.subheadline.bold())
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 72)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(voucherCode == nil ? Color.gray.opacity(0.3) : Color.blue.opacity(0.4), lineWidth: 1.5)
+                .animation(.easeInOut(duration: 0.2), value: voucherCode)
+        )
+    }
+    
+    private var iconBoxVoucher: some View {
+        Image(systemName: "ticket.fill")
+            .font(.system(size: 18, weight: .bold))
+            .foregroundColor(.white)
+            .frame(width: 44, height: 44)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(voucherCode == nil ? Color.gray.opacity(0.5) : Color(red: 0.05, green: 0.2, blue: 0.4))
+            )
+            .animation(.easeInOut(duration: 0.2), value: voucherCode)
+    }
+}
+
+
 struct VehiclePickerCard: View {
     let vehicle: Vehicle?
-
+    
     var body: some View {
         HStack(spacing: 14) {
             iconBoxVehicle
-
+            
             VStack(alignment: .leading, spacing: 2) {
-
+                
                 if let vehicle = vehicle {
                     Text(vehicle.name)
-                        .font(.subheadline)
+                        .font(.body)
+                        .padding(.bottom, 2)
                         .foregroundColor(.primary)
                     
                     Text(vehicle.licensePlate)
-                        .font(.caption.bold())
+                        .font(.caption2.bold())
                         .foregroundColor(.black)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
@@ -248,26 +311,25 @@ struct VehiclePickerCard: View {
                         .foregroundColor(.gray)
                 }
             }
-
+            
             Spacer()
-
+            
             Image(systemName: "chevron.up.chevron.down")
                 .font(.caption)
                 .foregroundColor(.gray)
         }
-        .padding(12)
-        .frame(height: 68)
+        .padding(.horizontal, 12)
+        .frame(height: 72)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.systemBackground))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(vehicle == nil ? Color.gray.opacity(0.3) : Color.blue.opacity(0.4))
-                .animation(.easeInOut(duration: 0.2), value: vehicle)
+                .stroke(vehicle == nil ? Color.gray.opacity(0.3) : Color.blue.opacity(0.4), lineWidth: 1.5)
+                .animation(.easeInOut(duration: 1), value: vehicle)
         )
     }
-
     private var iconBoxVehicle: some View {
         Image(systemName: "car.fill")
             .font(.system(size: 18))
@@ -286,16 +348,16 @@ struct SlotPickerCard: View {
     let slotCode: String?
     let timeRangeLabel: String
     let dayRangeLabel: String
-
+    
     var body: some View {
         HStack(spacing: 14) {
             iconBoxSlot
-
+            
             VStack(alignment: .leading, spacing: 2) {
-
+                
                 if let slotCode = slotCode {
                     Text(slotCode)
-                        .font(.subheadline.bold())
+                        .font(.body)
                         .foregroundColor(.primary)
                         .lineLimit(1)
                         .padding(.bottom, 2)
@@ -310,7 +372,7 @@ struct SlotPickerCard: View {
                             .cornerRadius(4)
                         
                         Text(timeRangeLabel)
-                            .font(.caption.bold())
+                            .font(.caption2.bold())
                             .foregroundStyle(.black)
                             .foregroundColor(.gray)
                             .padding(.horizontal, 6)
@@ -318,7 +380,7 @@ struct SlotPickerCard: View {
                             .background(Color(.systemGray5))
                             .cornerRadius(4)
                     }
-
+                    
                     
                 } else {
                     Text("Slot")
@@ -331,9 +393,9 @@ struct SlotPickerCard: View {
                         .lineLimit(1)
                 }
             }
-
+            
             Spacer()
-
+            
             Image(systemName: "chevron.right")
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -350,17 +412,17 @@ struct SlotPickerCard: View {
                 .animation(.easeInOut(duration: 0.2), value: slotCode)
         )
     }
-
+    
     private var iconBoxSlot: some View {
-    Image(systemName: "parkingsign")
-        .font(.system(size: 18, weight: .bold))
-        .foregroundColor(.white)
-        .frame(width: 44, height: 44)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(slotCode == nil ? Color.gray.opacity(0.5) : Color(red: 0.05, green: 0.2, blue: 0.4))
-        )
-        .animation(.easeInOut(duration: 0.2), value: slotCode)
+        Image(systemName: "parkingsign")
+            .font(.system(size: 18, weight: .bold))
+            .foregroundColor(.white)
+            .frame(width: 44, height: 44)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(slotCode == nil ? Color.gray.opacity(0.5) : Color(red: 0.05, green: 0.2, blue: 0.4))
+            )
+            .animation(.easeInOut(duration: 0.2), value: slotCode)
     }
 }
 //
@@ -370,7 +432,7 @@ struct BookingRow: View {
     let title: String
     let trailingIcon: String
     let isPlaceholder: Bool
-
+    
     var body: some View {
         HStack {
             Image(systemName: icon)

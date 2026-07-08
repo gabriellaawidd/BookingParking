@@ -34,6 +34,7 @@ struct ChooseParkingSlotView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationBarHidden(true)
+        .toolbar(.hidden, for: .tabBar)
     }
 
     // MARK: - Header
