@@ -177,8 +177,8 @@ struct BookingDetailsView: View {
             Spacer()
             Button {
                 Task {
-                    if let _ = await viewModel.submitBooking() {
-                        path.removeLast(path.count)
+                    if let booking = await viewModel.submitBooking() {
+                        path.append(booking)
                     }
                 }
             } label: {

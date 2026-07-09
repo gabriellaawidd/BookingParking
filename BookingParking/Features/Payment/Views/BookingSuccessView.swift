@@ -9,7 +9,9 @@ import SwiftUI
 
 struct BookingSuccessView: View {
     let booking: Booking
-    @Environment(\.dismiss) private var dismiss
+    @Binding var path: NavigationPath
+    var homeViewModel: HomeViewModel
+    
 
     var body: some View {
         ScrollView {
@@ -54,10 +56,11 @@ struct BookingSuccessView: View {
         }
         .navigationTitle("Booking Success")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    dismiss()
+                    goToHomeWithUpcomingSession()
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 14, weight: .semibold))
@@ -69,6 +72,20 @@ struct BookingSuccessView: View {
             }
         }.background(Color(.systemGroupedBackground))
     }
+    
+    private func goToHomeWithUpcomingSession() {
+           let session = BookingSession(
+               mallName: booking.mall.name,
+               floor: "",
+               zone: booking.slot,
+               slot: booking.slot,
+               bookingDateTime: Date(),
+               sessionEndDate: Date(),
+               staffNumber: "081234125674"
+           )
+           homeViewModel.updateSessionState(.upcoming(session))
+           path.removeLast(path.count)
+       }
 }
 
 #Preview {
@@ -85,7 +102,9 @@ struct BookingSuccessView: View {
                 pricePerHour: 5000,
                 duration: "2 hours",
                 total: 10000
-            )
+            ),
+            path: .constant(NavigationPath()),
+            homeViewModel: HomeViewModel()
         )
     }.padding()
 }

@@ -50,6 +50,12 @@ struct HomePageView: View {
                     viewModel: BookingFormViewModel(mall: mall)
                 )
             }
+            .navigationDestination(for: Booking.self) { booking in 
+              PaymentView(
+                viewModel: PaymentViewModel(booking: booking),
+                path: $viewModel.navigationPath,
+                homeViewModel: viewModel)
+            }
         }
         .sheet(isPresented: $viewModel.showSearchSheet, onDismiss: {
             if let mall = viewModel.pendingMallDetail {
