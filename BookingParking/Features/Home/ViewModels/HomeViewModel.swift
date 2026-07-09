@@ -25,7 +25,8 @@ class HomeViewModel {
     
     private let mallService: MallLocationServicing
     
-    private var timerCancellable: AnyCancellable?
+    private var countdownCancellable: AnyCancellable?
+    private var sessionCheckCancellable: AnyCancellable?
     
     init(sessionState: HomeSessionState = .empty) {
         self.sessionState = sessionState
@@ -37,13 +38,17 @@ class HomeViewModel {
             )
         )
         startCountdownIfNeeded()
+        startSessionAutoTransitionCheck()
     }
     
     private func startCountdownIfNeeded() {
-        guard case .active(let session) = sessionState else { return }
+        guard case .active(let session) = sessionState
+        else {
+            return
+        }
         updateRemainingTime(until: session.endDateTime)
         
-        timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
+        countdownCancellable = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self, case .active(let session) = self.sessionState else { return }
@@ -59,7 +64,32 @@ class HomeViewModel {
         remainingTime = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
         
         if remaining <= 0 {
-            timerCancellable?.cancel()
+            countdownCancellable?.cancel()
+        }
+    }
+    
+    private func startSessionAutoTransitionCheck() {
+        sessionCheckCancellable = Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.checkAndTransitionSession()
+            }
+    }
+    
+    private func checkAndTransitionSession() {
+        guard case .upcoming(let booking) = sessionState
+        else {
+            return
+        }
+        
+        let now = Date()
+        
+        if now >= booking.startDateTime && now <= booking.endDateTime {
+            sessionState = .active(booking)
+            startCountdownIfNeeded()
+        }
+        else if now > booking.endDateTime {
+            sessionState = .empty
         }
     }
     
@@ -77,6 +107,7 @@ class HomeViewModel {
     
     func updateSessionState(_ newState: HomeSessionState) {
         self.sessionState = newState
+        startCountdownIfNeeded()
     }
     
     @MainActor
