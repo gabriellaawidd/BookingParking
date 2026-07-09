@@ -32,6 +32,24 @@ struct ChooseParkingSlotView: View {
 
             reserveBar
         }
+//        .ignoresSafeArea()
+
+        .onAppear{
+            if viewModel.selectedSlotID != bookingViewModel.selectedSlot {
+                viewModel.selectedSlotID = bookingViewModel.selectedSlot
+            }
+            if let date = bookingViewModel.bookingDate, viewModel.selectedDate != date {
+                viewModel.selectedDate = date
+            }
+            if let start = bookingViewModel.startTime, viewModel.startTime != start {
+                viewModel.startTime = start
+                viewModel.hasSetStartTime = true
+            }
+            if let end = bookingViewModel.endTime, viewModel.endTime != end {
+                viewModel.endTime = end
+                viewModel.hasSetEndTime = true
+            }
+        }
         .background(Color(.systemGroupedBackground))
         .navigationBarHidden(true)
         .toolbar(.hidden, for: .tabBar)
@@ -79,6 +97,7 @@ struct ChooseParkingSlotView: View {
             } label: {
                 dateTimeLabel(title: "Date", value: viewModel.dateLabel, systemImage: "calendar")
             }
+            .tint(.black)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
@@ -89,6 +108,9 @@ struct ChooseParkingSlotView: View {
                     .frame(height: 150)
                     .padding(.top, 4)
                     .onChange(of: viewModel.startTime) { _, _ in
+                        viewModel.hasSetStartTime = true
+                        viewModel.operationalStartHour()
+                        viewModel.timeValidation()
                         withAnimation {
                             isStartTimeExpanded = false
                         }
@@ -96,6 +118,7 @@ struct ChooseParkingSlotView: View {
             } label: {
                 dateTimeLabel(title: "Start Time", value: viewModel.startTimeLabel, systemImage: "clock")
             }
+            .tint(.black)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
@@ -106,6 +129,9 @@ struct ChooseParkingSlotView: View {
                     .frame(height: 150)
                     .padding(.top, 4)
                     .onChange(of: viewModel.endTime) { _, _ in
+                        viewModel.hasSetEndTime = true
+                        viewModel.operationalEndHour()
+                        viewModel.timeValidation()
                         withAnimation {
                             isEndTimeExpanded = false
                         }
@@ -113,6 +139,7 @@ struct ChooseParkingSlotView: View {
             } label: {
                 dateTimeLabel(title: "End Time", value: viewModel.endTimeLabel, systemImage: "clock.badge.checkmark")
             }
+            .tint(.black)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
 
@@ -127,9 +154,6 @@ struct ChooseParkingSlotView: View {
 
     private func dateTimeLabel(title: String, value: String, systemImage: String) -> some View {
         HStack(spacing: 10) {
-            Image(systemName: systemImage)
-                .foregroundColor(.blue)
-                .frame(width: 22)
 
             Text(title)
                 .font(.subheadline.bold())
@@ -276,13 +300,14 @@ struct ChooseParkingSlotView: View {
             }
             dismiss()
         } label: {
-            Text(viewModel.selectedSlotID == nil ? "Select a Slot" : "Reserve Parking")
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(viewModel.canReserve ? Color.blue : Color.gray.opacity(0.4))
-                .cornerRadius(16)
+                    Text("Reserve Parking")
+                        .font(.headline)
+                        .foregroundColor(Color(.white))
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(viewModel.canReserve ? Color.blue : Color.gray.opacity(0.4))
+                        .cornerRadius(16)
+                
         }
         .disabled(!viewModel.canReserve)
         .padding()
@@ -291,4 +316,5 @@ struct ChooseParkingSlotView: View {
                 .shadow(color: .black.opacity(0.05), radius: 8, y: -2)
         )
     }
+    
 }

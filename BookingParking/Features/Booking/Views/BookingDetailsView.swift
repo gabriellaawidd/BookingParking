@@ -4,6 +4,7 @@ import SwiftUI
 struct BookingDetailsView: View {
     @Binding var path: NavigationPath
     @State var viewModel: BookingFormViewModel
+    @State private var parkingLotViewModel: ParkingLotViewModel?
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -15,6 +16,7 @@ struct BookingDetailsView: View {
                     mallInfoSection
                     
                     Divider().padding(.vertical, 16)
+
                     
                     bookingDetailsSection
                     
@@ -50,18 +52,18 @@ struct BookingDetailsView: View {
                         .padding(60)
                 )
             
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.headline)
-                    .foregroundColor(.black)
-                    .padding(10)
-                    .background(Color.white.opacity(0.9))
-                    .clipShape(Circle())
-            }
-            .padding(.top, 50)
-            .padding(.leading, 16)
+//            Button {
+//                dismiss()
+//            } label: {
+//                Image(systemName: "chevron.left")
+//                    .font(.headline)
+//                    .foregroundColor(.black)
+//                    .padding(10)
+//                    .background(Color.white.opacity(0.9))
+//                    .clipShape(Circle())
+//            }
+//            .padding(.top, 50)
+//            .padding(.leading, 16)
         }
     }
     
@@ -121,7 +123,7 @@ struct BookingDetailsView: View {
         NavigationLink {
             ChooseParkingSlotView(
                 bookingViewModel : viewModel,
-                viewModel: ParkingLotViewModel(mall: viewModel.mall)
+                viewModel: currentParkingLotViewModel
             )
         } label: {
             SlotPickerCard(
@@ -130,6 +132,15 @@ struct BookingDetailsView: View {
                 dayRangeLabel: viewModel.dayRangeLabel
             )
         }
+    }
+    
+    private var currentParkingLotViewModel: ParkingLotViewModel {
+            if let existing = parkingLotViewModel {
+                return existing
+            }
+            let newViewModel = ParkingLotViewModel(mall: viewModel.mall)
+            parkingLotViewModel = newViewModel
+            return newViewModel
     }
     
     private var paymentDetailsSection: some View {

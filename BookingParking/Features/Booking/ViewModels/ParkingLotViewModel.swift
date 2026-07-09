@@ -11,25 +11,63 @@ final class ParkingLotViewModel {
     var selectedDate: Date
     var startTime: Date
     var endTime: Date
+    
+    var hasSetStartTime = false
+    var hasSetEndTime = false
 
     // Layout untuk render (grid), dipisah dari data status
     let sections: [SlotSection]
+    
+    let startBookingTime = 10
+    let endBookingTime = 23
 
     init(mall: MallLocation,
          initialDate: Date = Date(),
          initialStart: Date = Date(),
          initialEnd: Date = Date().addingTimeInterval(3600),
          initialSlotID: String? = nil) {
-        self.mall = mall
-        self.sections = ParkingLotViewModel.buildLayout()
-        self.floorMap = ParkingLotViewModel.mockFloorMap()
-        self.selectedDate = initialDate
-        self.startTime = initialStart
-        self.endTime = initialEnd
-        self.selectedSlotID = initialSlotID
+            self.mall = mall
+            self.sections = ParkingLotViewModel.buildLayout()
+            self.floorMap = ParkingLotViewModel.mockFloorMap()
+            self.selectedDate = initialDate
+            self.startTime = initialStart
+            self.endTime = initialEnd
+            self.selectedSlotID = initialSlotID
     }
 
-    var canReserve: Bool { selectedSlotID != nil }
+    var canReserve: Bool {
+        selectedSlotID != nil && hasSetStartTime && hasSetEndTime
+    }
+    
+    func operationalStartHour(){
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: startTime)
+        
+        if hour < startBookingTime{
+            startTime = calendar.date(bySettingHour: startBookingTime, minute: 0, second: 0, of: startTime) ?? startTime
+        }
+        else if hour >= endBookingTime{
+            startTime = calendar.date(bySettingHour: endBookingTime - 1, minute: 45, second: 0, of: startTime) ?? startTime
+        }
+    }
+    
+    func operationalEndHour(){
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: endTime)
+        
+        if hour < startBookingTime{
+            endTime = calendar.date(bySettingHour: startBookingTime, minute: 0, second: 0, of: endTime) ?? endTime
+        }
+        else if hour > endBookingTime || (hour == endBookingTime && calendar.component(.minute, from: endTime) > 0){
+            endTime = calendar.date(bySettingHour: endBookingTime, minute: 0, second: 0, of: endTime) ?? endTime
+        }
+    }
+    
+    func timeValidation(){
+        if endTime <= startTime{
+            endTime = Calendar.current.date(byAdding : .minute, value: 15, to: startTime) ?? startTime
+        }
+    }
 
     func statusFor(_ code: String) -> SlotStatus {
         floorMap.slots.first(where: { $0.id == code })?.status ?? .available
@@ -64,16 +102,19 @@ final class ParkingLotViewModel {
     }
 
     var startTimeLabel: String {
+        guard hasSetStartTime else { return "" }
         let formatter = DateFormatter()
         formatter.dateFormat = "HH.mm"
         return formatter.string(from: startTime)
     }
 
     var endTimeLabel: String {
+        guard hasSetEndTime else { return "" }
         let formatter = DateFormatter()
         formatter.dateFormat = "HH.mm"
         return formatter.string(from: endTime)
     }
+    
 
     // MARK: - Layout definition (grid columns, sama seperti denah asli)
     static func buildLayout() -> [SlotSection] {
