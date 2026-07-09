@@ -74,16 +74,14 @@ struct BookingSuccessView: View {
     }
     
     private func goToHomeWithUpcomingSession() {
-           let session = BookingSession(
-               mallName: booking.mall.name,
-               floor: "",
-               zone: booking.slot,
-               slot: booking.slot,
-               bookingDateTime: Date(),
-               sessionEndDate: Date(),
-               staffNumber: "081234125674"
-           )
-           homeViewModel.updateSessionState(.upcoming(session))
+//           let session = Booking(
+//               mallName: booking.mall.name,
+//               slot: booking.slot,
+//               bookingDateTime: booking.startDateTime,
+//               sessionEndDate: booking.endDateTime,
+//               staffNumber: "081234125674"
+//           )
+           homeViewModel.updateSessionState(.upcoming(booking))
            path.removeLast(path.count)
        }
 }
@@ -95,6 +93,8 @@ struct BookingSuccessView: View {
                 mall: .sample,
                 date: "25 April 2025",
                 timeRange: "10AM - 12PM",
+                startDateTime: Date(),
+                endDateTime: Date().addingTimeInterval(7200),
                 slot: "B2 · Red Zone · Slot A2",
                 vehicle: Vehicle(name: "Toyota Avanza", licensePlate: "B 5678 CDE"),
                 voucher: nil,

@@ -41,13 +41,13 @@ class HomeViewModel {
     
     private func startCountdownIfNeeded() {
         guard case .active(let session) = sessionState else { return }
-        updateRemainingTime(until: session.sessionEndDate)
+        updateRemainingTime(until: session.endDateTime)
         
         timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self, case .active(let session) = self.sessionState else { return }
-                self.updateRemainingTime(until: session.sessionEndDate)
+                self.updateRemainingTime(until: session.endDateTime)
             }
     }
     
@@ -68,10 +68,10 @@ class HomeViewModel {
         openURL(url)
     }
     
-    func openMaps(for session: BookingSession) {
+    func openMaps(for session: Booking) {
         let location = CLLocation(latitude: -6.3025, longitude: 106.6524)
         let mapItem = MKMapItem(location: location, address: nil)
-        mapItem.name = session.mallName
+        mapItem.name = session.mall.name
         mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
     }
     

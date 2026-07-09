@@ -7,6 +7,6 @@
 
 enum HomeSessionState {
     case empty
-    case upcoming(BookingSession)
-    case active(BookingSession)
+    case upcoming(Booking)
+    case active(Booking)
 }

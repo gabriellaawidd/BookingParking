@@ -6,38 +6,37 @@ struct HomePageView: View {
     @State var viewModel: HomeViewModel
     @State private var locationManager = LocationManager()
     @Environment(\.openURL) private var openURL
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             ZStack(alignment: .top) {
                 Map(position: $viewModel.cameraPosition, selection: $viewModel.selectedMallID) {
                     UserAnnotation()
-                    
+
                     ForEach(viewModel.mapMalls) { mall in
                         Marker(mall.name, systemImage: "bag.fill", coordinate: mall.coordinate)
                             .tint(.orange)
                             .tag(mall.id)
-                        }
                     }
+                }
                 .ignoresSafeArea()
                 .onChange(of: viewModel.selectedMallID) { _, newID in
                     guard let newID, let mall = viewModel.mapMalls.first(where: {
                         $0.id == newID
-                    })
-                    else {
+                    }) else {
                         return
                     }
                     viewModel.selectedMall = mall
                     viewModel.selectedMallID = nil
                 }
-                
+
                 VStack {
                     topSearchBar
                         .padding(.horizontal)
                         .padding(.top, 8)
-                    
+
                     Spacer()
-                    
+
                     sessionCard
                         .padding(.horizontal)
                         .padding(.bottom, 12)
@@ -50,11 +49,12 @@ struct HomePageView: View {
                     viewModel: BookingFormViewModel(mall: mall)
                 )
             }
-            .navigationDestination(for: Booking.self) { booking in 
-              PaymentView(
-                viewModel: PaymentViewModel(booking: booking),
-                path: $viewModel.navigationPath,
-                homeViewModel: viewModel)
+            .navigationDestination(for: Booking.self) { booking in
+                PaymentView(
+                    viewModel: PaymentViewModel(booking: booking),
+                    path: $viewModel.navigationPath,
+                    homeViewModel: viewModel
+                )
             }
         }
         .sheet(isPresented: $viewModel.showSearchSheet, onDismiss: {
@@ -92,7 +92,7 @@ struct HomePageView: View {
             }
         }
     }
-    
+
     private var topSearchBar: some View {
         Button {
             viewModel.showSearchSheet = true
@@ -100,10 +100,10 @@ struct HomePageView: View {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
-                
+
                 Text("Search mall")
                     .foregroundStyle(.secondary)
-                
+
                 Spacer()
             }
             .padding(12)
@@ -112,7 +112,7 @@ struct HomePageView: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     @ViewBuilder
     private var sessionCard: some View {
         switch viewModel.sessionState {
@@ -120,18 +120,29 @@ struct HomePageView: View {
             EmptySessionCard {
                 viewModel.showSearchSheet = true
             }
-        case .upcoming(let session):
-            UpcomingSessionCard(session: session,
-                                onNavigate: {
-                viewModel.openMaps(for: session)
-            },
-                                onCallStaff: {
-                viewModel.callStaff(phoneNumber: session.staffNumber, openURL: openURL)
-            })
-        case .active(let session):
-            ActiveSessionCard(session: session, remainingTime: viewModel.remainingTime,
-                              onOpenSlot: { viewModel.openSlot() },
-                              onCallStaff: { viewModel.callStaff(phoneNumber: session.staffNumber, openURL: openURL) })
+        case .upcoming(let booking):
+            UpcomingSessionCard(
+                session: booking,
+                onNavigate: {
+                    viewModel.openMaps(for: booking)
+                },
+                onCallStaff: {
+                    if let staffNumber = booking.staffNumber {
+                        viewModel.callStaff(phoneNumber: staffNumber, openURL: openURL)
+                    }
+                }
+            )
+        case .active(let booking):
+            ActiveSessionCard(
+                session: booking,
+                remainingTime: viewModel.remainingTime,
+                onOpenSlot: { viewModel.openSlot() },
+                onCallStaff: {
+                    if let staffNumber = booking.staffNumber {
+                        viewModel.callStaff(phoneNumber: staffNumber, openURL: openURL)
+                    }
+                }
+            )
         }
     }
 }

@@ -5,6 +5,8 @@ struct Booking: Identifiable, Hashable {
     var mall: MallLocation
     var date: String
     var timeRange: String
+    var startDateTime: Date
+    var endDateTime: Date
     var slot: String
     var vehicle: Vehicle
     var voucher: String?
@@ -12,6 +14,7 @@ struct Booking: Identifiable, Hashable {
     var pricePerHour: Int
     var duration: String
     var total: Int
+    var staffNumber: String? 
     var transactionNumber: String = Booking.generateTransactionNumber()
     
     static func generateTransactionNumber() -> String {

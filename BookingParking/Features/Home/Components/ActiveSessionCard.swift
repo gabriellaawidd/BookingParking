@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct ActiveSessionCard: View {
-    let session: BookingSession
+    let session: Booking
     let remainingTime: String
     let onOpenSlot: () -> Void
     let onCallStaff: () -> Void
 
     var body: some View {
         VStack(spacing: 8) {
-            Text(session.mallName)
+            Text(session.mall.name)
                 .font(.title3.bold())
 
-            Text("\(session.floor) · \(session.zone) · Slot \(session.slot)")
+            Text("Slot \(session.slot)")
                 .font(.subheadline)
                 .foregroundColor(.primary.opacity(0.8))
 
@@ -60,14 +60,19 @@ struct ActiveSessionCard: View {
 
 #Preview {
     ActiveSessionCard(
-        session: BookingSession(
-            mallName: "AEON Mall BSD City",
-            floor: "B2",
-            zone: "Red Zone",
-            slot: "A1",
-            bookingDateTime: .now,
-            sessionEndDate: .now.addingTimeInterval(5449),
-            staffNumber: "+622112345678"
+        session: Booking(
+            mall: .sample,
+            date: "9 Jul 2026",
+            timeRange: "14.00-16.00",
+            startDateTime: .now,
+            endDateTime: .now.addingTimeInterval(5449),
+            slot: "B2 · Red Zone · Slot A1",
+            vehicle: Vehicle(name: "Toyota Avanza", licensePlate: "B 1234 ABC"),
+            voucher: nil,
+            paymentMethod: nil,
+            pricePerHour: 5000,
+            duration: "2 hours",
+            total: 10000
         ),
         remainingTime: "01:30:49",
         onOpenSlot: {},

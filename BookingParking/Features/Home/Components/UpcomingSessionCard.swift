@@ -15,24 +15,24 @@
 import SwiftUI
 
 struct UpcomingSessionCard: View {
-    let session: BookingSession
+    let session: Booking
     let onNavigate: () -> Void
     let onCallStaff: () -> Void
 
     private var formattedDate: String {
-        session.bookingDateTime.formatted(.dateTime.weekday(.wide).day().month(.wide).year())
+        session.startDateTime.formatted(.dateTime.weekday(.wide).day().month(.wide).year())
     }
 
     private var formattedTimeRange: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH.mm"
-        let start = formatter.string(from: session.bookingDateTime)
-        let end = formatter.string(from: session.sessionEndDate)
+        let start = formatter.string(from: session.startDateTime)
+        let end = formatter.string(from: session.endDateTime)
         return "\(start)-\(end)"
     }
 
     private var durationText: String {
-        let duration = session.sessionEndDate.timeIntervalSince(session.bookingDateTime)
+        let duration = session.endDateTime.timeIntervalSince(session.startDateTime)
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
 
@@ -47,10 +47,10 @@ struct UpcomingSessionCard: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Text(session.mallName)
+            Text(session.mall.name)
                 .font(.title3.bold())
 
-            Text("\(session.floor) · \(session.zone) · Slot \(session.slot)")
+            Text("Slot - \(session.slot)")
                 .font(.subheadline)
                 .foregroundColor(.primary.opacity(0.8))
 
@@ -102,16 +102,38 @@ struct UpcomingSessionCard: View {
     }
 }
 
+//#Preview {
+//    UpcomingSessionCard(
+//        session: BookingSession(
+//            mallName: "AEON Mall BSD City",
+//            floor: "B2",
+//            zone: "Red Zone",
+//            slot: "A1",
+//            bookingDateTime: .now.addingTimeInterval(3600),
+//            sessionEndDate: .now.addingTimeInterval(7200),
+//            staffNumber: "+622112345678"
+//        ),
+//        onNavigate: {},
+//        onCallStaff: {}
+//    )
+//    .padding()
+//}
+
 #Preview {
     UpcomingSessionCard(
-        session: BookingSession(
-            mallName: "AEON Mall BSD City",
-            floor: "B2",
-            zone: "Red Zone",
-            slot: "A1",
-            bookingDateTime: .now.addingTimeInterval(3600),
-            sessionEndDate: .now.addingTimeInterval(7200),
-            staffNumber: "+622112345678"
+        session: Booking(
+            mall: .sample,
+            date: "9 Jul 2026",
+            timeRange: "14.00-16.00",
+            startDateTime: .now.addingTimeInterval(3600),
+            endDateTime: .now.addingTimeInterval(7200),
+            slot: "B2 · Red Zone · Slot A1",
+            vehicle: Vehicle(name: "Toyota Avanza", licensePlate: "B 1234 ABC"),
+            voucher: nil,
+            paymentMethod: nil,
+            pricePerHour: 5000,
+            duration: "2 hours",
+            total: 10000
         ),
         onNavigate: {},
         onCallStaff: {}
