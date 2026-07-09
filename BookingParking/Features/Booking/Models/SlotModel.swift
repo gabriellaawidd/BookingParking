@@ -21,13 +21,11 @@ struct ParkingSlot: Identifiable, Codable, Equatable {
     var isHandicap: Bool = false
 }
 
-// Satu kolom vertikal berisi beberapa slot dari atas ke bawah
 struct SlotColumn: Identifiable {
     let id = UUID()
     let codes: [String]
 }
 
-// Satu baris cluster (beberapa kolom bersebelahan) + jarak/arrow opsional
 struct SlotSection: Identifiable {
     let id = UUID()
     let columns: [SlotColumn]

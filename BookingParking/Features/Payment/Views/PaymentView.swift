@@ -30,8 +30,6 @@ struct PaymentView: View {
             }
             .padding()
 
-            Spacer()
-
             Button {
                 Task {
                     await viewModel.refreshStatus()
@@ -68,7 +66,6 @@ struct PaymentView: View {
                 showSuccess = true
             }
         }
-        .background(Color(.systemGroupedBackground))
     }
 }
 

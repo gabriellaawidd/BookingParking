@@ -33,7 +33,7 @@ struct BookingSuccessView: View {
                     mallName: booking.mall.name,
                     slotInfo: booking.slot,
                     total: booking.total,
-                    style: .grouped
+                    style: .plain
                 )
 
                 Divider()
@@ -66,21 +66,14 @@ struct BookingSuccessView: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.primary)
                         .frame(width: 32, height: 32)
-                        .background(Color(.systemGroupedBackground))
                         .clipShape(Circle())
                 }
             }
-        }.background(Color(.systemGroupedBackground))
+        }
+        .padding()
     }
     
     private func goToHomeWithUpcomingSession() {
-//           let session = Booking(
-//               mallName: booking.mall.name,
-//               slot: booking.slot,
-//               bookingDateTime: booking.startDateTime,
-//               sessionEndDate: booking.endDateTime,
-//               staffNumber: "081234125674"
-//           )
            homeViewModel.updateSessionState(.upcoming(booking))
            path.removeLast(path.count)
        }
@@ -106,5 +99,5 @@ struct BookingSuccessView: View {
             path: .constant(NavigationPath()),
             homeViewModel: HomeViewModel()
         )
-    }.padding()
+    }
 }

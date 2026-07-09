@@ -27,5 +27,4 @@ struct BookingDetailRow: View {
         BookingDetailRow(title: "Parking Slot", value: "B2 · Red Zone · Slot A2")
     }
     .padding()
-    .background(Color(.systemGroupedBackground))
 }

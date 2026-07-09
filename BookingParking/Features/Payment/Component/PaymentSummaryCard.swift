@@ -9,15 +9,15 @@ import SwiftUI
 
 struct PaymentSummaryCard: View {
     enum Style {
-        case grouped 
-        case filled
+        case tinted
+        case plain
     }
 
     let mallName: String
     let slotInfo: String
     let total: Int
     var totalLabel: String = "Total"
-    var style: Style = .filled
+    var style: Style = .tinted
 
     var body: some View {
         HStack {
@@ -38,18 +38,9 @@ struct PaymentSummaryCard: View {
                     .foregroundStyle(Color.accentColor)
             }
         }
-        .padding()
-        .background(backgroundColor)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-
-    private var backgroundColor: Color {
-        switch style {
-        case .grouped:
-            return Color(.systemGroupedBackground)
-        case .filled:
-            return Color(.systemBackground)
-        }
+        .padding(style == .tinted ? 16 : 0)
+        .background(style == .tinted ? Color(.systemGray6) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: style == .tinted ? 16 : 0, style: .continuous))
     }
 }
 
@@ -65,10 +56,8 @@ struct PaymentSummaryCard: View {
             mallName: "AEON Mall BSD City",
             slotInfo: "B2 · Red Zone · Slot A2",
             total: 10000,
-            totalLabel: "Total Payment",
-            style: .grouped
+            style: .plain
         )
     }
     .padding()
-    .background(Color(.systemGroupedBackground))
 }
