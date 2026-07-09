@@ -34,7 +34,7 @@ struct BookingDetailsView: View {
 
             }
         }
-        .ignoresSafeArea()
+        .ignoresSafeArea(edges: .bottom)
         .navigationBarHidden(false)
         .toolbar(.hidden, for: .tabBar)
     }
