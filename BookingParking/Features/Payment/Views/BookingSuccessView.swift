@@ -46,7 +46,7 @@ struct BookingSuccessView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     BookingDetailRow(title: "Date and Time", value: "\(booking.date) · \(booking.timeRange)")
                     BookingDetailRow(title: "Parking Slot", value: booking.slot)
-                    BookingDetailRow(title: "Kendaraan", value: booking.vehicle.licensePlate)
+                    BookingDetailRow(title: "Vehicle", value: booking.vehicle.licensePlate)
                     BookingDetailRow(title: "Payment Method", value: booking.paymentMethod ?? "QRIS")
                     BookingDetailRow(title: "Transaction Number", value: booking.transactionNumber)
                 }

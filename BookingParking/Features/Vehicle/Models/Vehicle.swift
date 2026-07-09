@@ -2,6 +2,7 @@ import Foundation
 
 struct Vehicle: Identifiable, Equatable, Hashable {
     let id: UUID = UUID()
+    var backendId: Int?
     var name: String
     var licensePlate: String
 

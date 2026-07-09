@@ -2,6 +2,7 @@ import Foundation
 
 struct Booking: Identifiable, Hashable {
     let id = UUID()
+    var backendId: Int?
     var mall: MallLocation
     var date: String
     var timeRange: String
