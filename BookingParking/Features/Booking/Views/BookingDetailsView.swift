@@ -108,7 +108,7 @@ struct BookingDetailsView: View {
             }
             Divider()
             NavigationLink {
-                AddVehicleView()
+//                AddVehicleView()
             } label: {
                 Label("Add Vehicle", systemImage: "plus")
             }
@@ -172,7 +172,7 @@ struct BookingDetailsView: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(viewModel.hasBooked ? "Rp \(viewModel.total.formattedThousands())" : "Rp 0")
-                    .font(.body)
+                    .font(.headline)
                 
                 if viewModel.hasBooked {
                         Text("\(viewModel.timeRangeLabel) (\(viewModel.durationLabel))")
