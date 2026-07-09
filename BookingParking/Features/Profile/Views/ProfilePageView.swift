@@ -2,7 +2,7 @@
 import SwiftUI
 
 struct ProfilePageView: View {
-    @EnvironmentObject var router: AppRouter
+//    @EnvironmentObject var router: AppRouter
 
     var body: some View {
         VStack {

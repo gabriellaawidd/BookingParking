@@ -1,0 +1,18 @@
+import Foundation
+
+struct Vehicle: Identifiable, Equatable, Hashable {
+    let id: UUID = UUID()
+    var name: String
+    var licensePlate: String
+
+    static func == (lhs: Vehicle, rhs: Vehicle) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+}
+
+extension Vehicle {
+    static let registered: [Vehicle] = [
+        Vehicle(name: "Toyota Avanza", licensePlate: "B 5678 CDE"),
+        Vehicle(name: "Toyota Rush", licensePlate: "B 9808 BGD"),
+        Vehicle(name: "Honda Brio", licensePlate: "B 0928 DGF")
+    ]
+}

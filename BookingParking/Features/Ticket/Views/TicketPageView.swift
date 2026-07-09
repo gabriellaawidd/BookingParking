@@ -2,7 +2,6 @@
 import SwiftUI
 
 struct TicketPageView: View {
-    @EnvironmentObject var router: AppRouter
     @State private var selectedSegment: TicketSegment = .schedule
 
     enum TicketSegment {
