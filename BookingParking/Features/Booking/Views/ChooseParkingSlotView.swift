@@ -21,18 +21,21 @@ struct ChooseParkingSlotView: View {
                     legend
                     floorPlanCard
 
-                    if let selected = viewModel.selectedSlotID {
+                    if viewModel.canReserve, let selected = viewModel.selectedSlotID {
                         selectedSummary(selected)
                     }
                 }
                 .padding(.horizontal)
                 .padding(.top, 12)
                 .padding(.bottom, 24)
+                
+                reserveBar
+                    .padding(.top, 40)
             }
-
-            reserveBar
+    
         }
-//        .ignoresSafeArea()
+        .ignoresSafeArea(edges: .bottom)
+
 
         .onAppear{
             if viewModel.selectedSlotID != bookingViewModel.selectedSlot {
@@ -98,10 +101,10 @@ struct ChooseParkingSlotView: View {
                 dateTimeLabel(title: "Date", value: viewModel.dateLabel, systemImage: "calendar")
             }
             .tint(.black)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 24)
             .padding(.vertical, 14)
 
-            Divider().padding(.leading, 46)
+            Divider().padding(.horizontal, 24)
 
             DisclosureGroup(isExpanded: $isStartTimeExpanded) {
                 TimeIntervalBooking(selection: $viewModel.startTime, minuteInterval: minuteInterval)
@@ -119,10 +122,10 @@ struct ChooseParkingSlotView: View {
                 dateTimeLabel(title: "Start Time", value: viewModel.startTimeLabel, systemImage: "clock")
             }
             .tint(.black)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 24)
             .padding(.vertical, 14)
 
-            Divider().padding(.leading, 46)
+            Divider().padding(.horizontal, 24)
 
             DisclosureGroup(isExpanded: $isEndTimeExpanded) {
                 TimeIntervalBooking(selection: $viewModel.endTime, minuteInterval: minuteInterval)
@@ -140,10 +143,10 @@ struct ChooseParkingSlotView: View {
                 dateTimeLabel(title: "End Time", value: viewModel.endTimeLabel, systemImage: "clock.badge.checkmark")
             }
             .tint(.black)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 24)
             .padding(.vertical, 14)
 
-            Divider().padding(.leading, 46)
+//            Divider().padding(.leading, 24)
         }
         .background(
             RoundedRectangle(cornerRadius: 16)
@@ -170,12 +173,15 @@ struct ChooseParkingSlotView: View {
     private var legend: some View {
         HStack(spacing: 24) {
             legendItem(color: SlotStatus.available.color, label: "Available")
+                .padding(.trailing, 20)
             legendItem(color: SlotStatus.occupied.color, label: "Occupied")
+                .padding(.trailing, 20)
             legendItem(color: SlotStatus.priority.color, label: "Priority")
-            Spacer()
+
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.systemBackground))
@@ -311,9 +317,11 @@ struct ChooseParkingSlotView: View {
         }
         .disabled(!viewModel.canReserve)
         .padding()
+        .padding(.bottom, 20)
         .background(
             Color(.systemBackground)
                 .shadow(color: .black.opacity(0.05), radius: 8, y: -2)
+                .ignoresSafeArea(edges: .bottom)
         )
     }
     
