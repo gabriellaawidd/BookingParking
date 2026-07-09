@@ -15,11 +15,6 @@ struct VehicleSelectionRow: View {
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: 12) {
-                Image(systemName: "car.side.fill")
-                    .font(.system(size: 18))
-                    .foregroundStyle(.primary)
-                    .frame(width: 32, height: 32)
-
                 VStack(alignment: .leading, spacing: 4) {
                     Text(vehicle.name)
                         .font(.headline)

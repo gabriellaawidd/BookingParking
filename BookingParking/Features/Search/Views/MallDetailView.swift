@@ -10,14 +10,19 @@ import MapKit
 
 struct MallDetailView: View {
     let mall: MallLocation
+    let pricePerHour: Int
     let onBookNow: (MallLocation) -> Void
 
     @State private var cameraPosition: MapCameraPosition
-    private let pricePerHourText = "Rp5.000/hour"
-
+    
+    private var pricePerHourText: String {
+        "Rp\(pricePerHour.formattedRupiah)/hour"
+    }
+    
     init(mall: MallLocation, onBookNow: @escaping (MallLocation) -> Void) {
         self.mall = mall
         self.onBookNow = onBookNow
+        self.pricePerHour = 5000
         self._cameraPosition = State(wrappedValue: .region(
             MKCoordinateRegion(
                 center: mall.coordinate,

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddVehicleView: View {
-    let viewModel: VehicleViewModel
+    let viewModel: BookingFormViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var prefix: String = ""
@@ -22,62 +22,58 @@ struct AddVehicleView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            header
-
-            Image(systemName: "car.fill")
-                .font(.system(size: 36))
-                .foregroundStyle(.primary)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Add Vehicle")
-                    .font(.largeTitle.bold())
-                Text("Enter your vehicle's license plate.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            HStack(spacing: 10) {
-                plateField("AB", text: $prefix, maxLength: 2, field: .prefix)
-                plateField("1234", text: $number, maxLength: 4, field: .number)
-                plateField("CDE", text: $suffix, maxLength: 3, field: .suffix)
-            }
-
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-    }
-
-    private var header: some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .semibold))
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 20) {
+                Image(systemName: "car.fill")
+                    .font(.system(size: 36))
                     .foregroundStyle(.primary)
-                    .frame(width: 32, height: 32)
-                    .background(Color(.systemGray6))
-                    .clipShape(Circle())
-            }
 
-            Spacer()
-
-            Button {
-                Task {
-                    await viewModel.addVehicle(name: "Kendaraan", licensePlate: licensePlate)
-                    dismiss()
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Add Vehicle")
+                        .font(.largeTitle.bold())
+                    Text("Enter your vehicle's license plate.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
-            } label: {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 32, height: 32)
-                    .background(isValid ? Color.accentColor : Color(.systemGray4))
-                    .clipShape(Circle())
+
+                HStack(spacing: 10) {
+                    plateField("AB", text: $prefix, maxLength: 2, field: .prefix)
+                    plateField("1234", text: $number, maxLength: 4, field: .number)
+                    plateField("CDE", text: $suffix, maxLength: 3, field: .suffix)
+                }
+
+                Spacer()
             }
-            .disabled(!isValid)
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.primary)
+                            .frame(width: 32, height: 32)
+                            .clipShape(Circle())
+                    }
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        viewModel.addVehicle(Vehicle(name: "Kendaraan", licensePlate: licensePlate))
+                        dismiss()
+                    } label: {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 32, height: 32)
+                            .background(isValid ? Color.accentColor : Color(.systemGray4))
+                            .clipShape(Circle())
+                    }
+                    .disabled(!isValid)
+                }
+            }
         }
     }
 
@@ -111,5 +107,5 @@ struct AddVehicleView: View {
 }
 
 #Preview {
-    AddVehicleView(viewModel: VehicleViewModel())
+    AddVehicleView(viewModel: BookingFormViewModel(mall: .sample))
 }

@@ -45,7 +45,6 @@ struct VehicleService: VehicleServicing {
         //kirim ke backend, mapping error yang sama seperti di atas
     }
 
-    /// Ubah error teknis (URLError) jadi VehicleError yang lebih bermakna untuk UI.
     private func mapURLError(_ error: URLError) -> VehicleError {
         switch error.code {
         case .notConnectedToInternet, .networkConnectionLost, .timedOut:
