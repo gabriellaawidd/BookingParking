@@ -21,52 +21,102 @@ final class ParkingLotViewModel {
     let startBookingTime = 10
     let endBookingTime = 23
 
+//    init(mall: MallLocation,
+//         initialDate: Date = Date(),
+//         initialStart: Date = Date(),
+//         initialEnd: Date = Date().addingTimeInterval(3600),
+//         initialSlotID: String? = nil) {
+//            self.mall = mall
+//            self.sections = ParkingLotViewModel.buildLayout()
+//            self.floorMap = ParkingLotViewModel.mockFloorMap()
+//            self.selectedDate = initialDate
+//            self.startTime = initialStart
+//            self.endTime = initialEnd
+//            self.selectedSlotID = initialSlotID
+//    }
+    
     init(mall: MallLocation,
          initialDate: Date = Date(),
-         initialStart: Date = Date(),
-         initialEnd: Date = Date().addingTimeInterval(3600),
          initialSlotID: String? = nil) {
-            self.mall = mall
-            self.sections = ParkingLotViewModel.buildLayout()
-            self.floorMap = ParkingLotViewModel.mockFloorMap()
-            self.selectedDate = initialDate
-            self.startTime = initialStart
-            self.endTime = initialEnd
-            self.selectedSlotID = initialSlotID
+        self.mall = mall
+        self.sections = ParkingLotViewModel.buildLayout()
+        self.floorMap = ParkingLotViewModel.mockFloorMap()
+        self.selectedDate = initialDate
+        self.selectedSlotID = initialSlotID
+
+        // Default start time: jam sekarang, dibulatkan ke bawah ke kelipatan 15 menit
+        let now = Date()
+        let roundedStart = ParkingLotViewModel.roundDownToHour(now)
+        self.startTime = roundedStart
+        self.endTime = Calendar.current.date(byAdding: .hour, value: 1, to: roundedStart) ?? roundedStart
+
+        self.hasSetStartTime = true   // ← langsung true, karena sudah ada default value yang valid
+        self.hasSetEndTime = true     // ← langsung true juga
+    }
+    
+    static func roundDownToHour(_ date: Date) -> Date {
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day, .hour], from: date)
+        components.minute = 0
+        components.second = 0
+        return calendar.date(from: components) ?? date
     }
 
     var canReserve: Bool {
         selectedSlotID != nil && hasSetStartTime && hasSetEndTime
     }
     
-    func operationalStartHour(){
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: startTime)
-        
-        if hour < startBookingTime{
-            startTime = calendar.date(bySettingHour: startBookingTime, minute: 0, second: 0, of: startTime) ?? startTime
-        }
-        else if hour >= endBookingTime{
-            startTime = calendar.date(bySettingHour: endBookingTime - 1, minute: 45, second: 0, of: startTime) ?? startTime
-        }
-    }
-    
-    func operationalEndHour(){
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: endTime)
-        
-        if hour < startBookingTime{
-            endTime = calendar.date(bySettingHour: startBookingTime, minute: 0, second: 0, of: endTime) ?? endTime
-        }
-        else if hour > endBookingTime || (hour == endBookingTime && calendar.component(.minute, from: endTime) > 0){
-            endTime = calendar.date(bySettingHour: endBookingTime, minute: 0, second: 0, of: endTime) ?? endTime
-        }
-    }
+//    func operationalStartHour(){
+//        let calendar = Calendar.current
+//        let hour = calendar.component(.hour, from: startTime)
+//        
+//        if hour < startBookingTime{
+//            startTime = calendar.date(bySettingHour: startBookingTime, minute: 0, second: 0, of: startTime) ?? startTime
+//        }
+//        else if hour >= endBookingTime{
+//            startTime = calendar.date(bySettingHour: endBookingTime - 1, minute: 45, second: 0, of: startTime) ?? startTime
+//        }
+//    }
+//    
+//    func operationalEndHour(){
+//        let calendar = Calendar.current
+//        let hour = calendar.component(.hour, from: endTime)
+//        
+//        if hour < startBookingTime{
+//            endTime = calendar.date(bySettingHour: startBookingTime, minute: 0, second: 0, of: endTime) ?? endTime
+//        }
+//        else if hour > endBookingTime || (hour == endBookingTime && calendar.component(.minute, from: endTime) > 0){
+//            endTime = calendar.date(bySettingHour: endBookingTime, minute: 0, second: 0, of: endTime) ?? endTime
+//        }
+//    }
     
     func timeValidation(){
         if endTime <= startTime{
             endTime = Calendar.current.date(byAdding : .minute, value: 15, to: startTime) ?? startTime
         }
+    }
+    
+    func snapStartTime(interval: Int = 15) {
+        startTime = roundedToInterval(startTime, interval: interval)
+    }
+
+    func snapEndTime(interval: Int = 15) {
+        endTime = roundedToInterval(endTime, interval: interval)
+    }
+
+    private func roundedToInterval(_ date: Date, interval: Int) -> Date {
+        let calendar = Calendar.current
+        let minute = calendar.component(.minute, from: date)
+        let rounded = Int((Double(minute) / Double(interval)).rounded()) * interval
+
+        var components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        if rounded >= 60 {
+            components.minute = 0
+            components.hour = (components.hour ?? 0) + 1
+        } else {
+            components.minute = rounded
+        }
+        return calendar.date(from: components) ?? date
     }
 
     func statusFor(_ code: String) -> SlotStatus {
@@ -102,14 +152,12 @@ final class ParkingLotViewModel {
     }
 
     var startTimeLabel: String {
-        guard hasSetStartTime else { return "" }
         let formatter = DateFormatter()
         formatter.dateFormat = "HH.mm"
         return formatter.string(from: startTime)
     }
 
     var endTimeLabel: String {
-        guard hasSetEndTime else { return "" }
         let formatter = DateFormatter()
         formatter.dateFormat = "HH.mm"
         return formatter.string(from: endTime)

@@ -5,16 +5,13 @@ struct ChooseParkingSlotView: View {
     @State var bookingViewModel: BookingFormViewModel
     @State var viewModel: ParkingLotViewModel
     @Environment(\.dismiss) private var dismiss
-
+    
     @State private var isDateExpanded = false
     @State private var isStartTimeExpanded = false
     @State private var isEndTimeExpanded = false
-    var minuteInterval: Int = 15
 
     var body: some View {
         VStack(spacing: 0) {
-            header
-
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     dateTimeCard
@@ -26,16 +23,16 @@ struct ChooseParkingSlotView: View {
                     }
                 }
                 .padding(.horizontal)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
+                .padding(.vertical, 16)
                 
                 reserveBar
-                    .padding(.top, 40)
+                    .padding(.bottom)
             }
     
         }
+        .navigationTitle(viewModel.mall.name)
+        .navigationBarTitleDisplayMode(.inline)
         .ignoresSafeArea(edges: .bottom)
-
 
         .onAppear{
             if viewModel.selectedSlotID != bookingViewModel.selectedSlot {
@@ -54,105 +51,95 @@ struct ChooseParkingSlotView: View {
             }
         }
         .background(Color(.systemGroupedBackground))
-        .navigationBarHidden(true)
         .toolbar(.hidden, for: .tabBar)
     }
-
-    // MARK: - Header
-    private var header: some View {
-        HStack(spacing: 14) {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                    .padding(10)
-                    .background(Color(.systemGray6))
-                    .clipShape(Circle())
-            }
-
-            Text(viewModel.mall.name)
-                .font(.title3.bold())
-                .lineLimit(1)
-
-            Spacer()
-        }
-        .padding(.horizontal)
-        .padding(.top, 54)
-        .padding(.bottom, 12)
-        .background(Color(.systemBackground))
-    }
-
-    // MARK: - Date/time card
+    
     private var dateTimeCard: some View {
         VStack(spacing: 0) {
-            DisclosureGroup(isExpanded: $isDateExpanded) {
+            HStack {
+                Text("Date")
+                    .font(.headline)
+                Spacer()
+                pillButton(text: viewModel.dateLabel) {
+                    withAnimation { isDateExpanded.toggle() }
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 14)
+
+            if isDateExpanded {
                 DatePicker("", selection: $viewModel.selectedDate, displayedComponents: .date)
                     .datePickerStyle(.graphical)
                     .labelsHidden()
-                    .padding(.top, 4)
-                    .onChange(of: viewModel.selectedDate) { _, _ in
-                        withAnimation {
-                            isDateExpanded = false
-                        }
-                    }
-            } label: {
-                dateTimeLabel(title: "Date", value: viewModel.dateLabel, systemImage: "calendar")
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
             }
-            .tint(.black)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 14)
 
             Divider().padding(.horizontal, 24)
 
-            DisclosureGroup(isExpanded: $isStartTimeExpanded) {
-                TimeIntervalBooking(selection: $viewModel.startTime, minuteInterval: minuteInterval)
-                    .frame(height: 150)
-                    .padding(.top, 4)
+            HStack {
+                Text("Start Time")
+                    .font(.headline)
+                Spacer()
+                pillButton(text: viewModel.startTimeLabel) {
+                    withAnimation { isStartTimeExpanded.toggle() }
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 14)
+
+            if isStartTimeExpanded {
+                TimeIntervalBooking(selection: $viewModel.startTime, minuteInterval: 15, minHour: 10, maxHour: 23)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 8)
                     .onChange(of: viewModel.startTime) { _, _ in
                         viewModel.hasSetStartTime = true
-                        viewModel.operationalStartHour()
                         viewModel.timeValidation()
-                        withAnimation {
-                            isStartTimeExpanded = false
-                        }
                     }
-            } label: {
-                dateTimeLabel(title: "Start Time", value: viewModel.startTimeLabel, systemImage: "clock")
             }
-            .tint(.black)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 14)
 
             Divider().padding(.horizontal, 24)
 
-            DisclosureGroup(isExpanded: $isEndTimeExpanded) {
-                TimeIntervalBooking(selection: $viewModel.endTime, minuteInterval: minuteInterval)
-                    .frame(height: 150)
-                    .padding(.top, 4)
-                    .onChange(of: viewModel.endTime) { _, _ in
-                        viewModel.hasSetEndTime = true
-                        viewModel.operationalEndHour()
-                        viewModel.timeValidation()
-                        withAnimation {
-                            isEndTimeExpanded = false
-                        }
-                    }
-            } label: {
-                dateTimeLabel(title: "End Time", value: viewModel.endTimeLabel, systemImage: "clock.badge.checkmark")
+            HStack {
+                Text("End Time")
+                    .font(.headline)
+                Spacer()
+                pillButton(text: viewModel.endTimeLabel) {
+                    withAnimation { isEndTimeExpanded.toggle() }
+                }
             }
-            .tint(.black)
             .padding(.horizontal, 24)
             .padding(.vertical, 14)
 
-//            Divider().padding(.leading, 24)
+            if isEndTimeExpanded {
+                TimeIntervalBooking(selection: $viewModel.endTime, minuteInterval: 15, minHour: 10, maxHour: 23)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 8)
+                    .onChange(of: viewModel.endTime) { _, _ in
+                        viewModel.hasSetEndTime = true
+                        viewModel.timeValidation()
+                    }
+            }
         }
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
         )
+    }
+    
+    private func pillButton(text: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(text)
+                .font(.subheadline.bold())
+                .foregroundColor(.primary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(Color(.systemGray5))
+                )
+        }
     }
 
     private func dateTimeLabel(title: String, value: String, systemImage: String) -> some View {
@@ -169,13 +156,10 @@ struct ChooseParkingSlotView: View {
         }
     }
 
-    // MARK: - Legend
     private var legend: some View {
         HStack(spacing: 24) {
             legendItem(color: SlotStatus.available.color, label: "Available")
-                .padding(.trailing, 20)
             legendItem(color: SlotStatus.occupied.color, label: "Occupied")
-                .padding(.trailing, 20)
             legendItem(color: SlotStatus.priority.color, label: "Priority")
 
         }
@@ -195,12 +179,11 @@ struct ChooseParkingSlotView: View {
                 .fill(color)
                 .frame(width: 14, height: 14)
             Text(label)
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
         }
     }
 
-    // MARK: - Floor plan card
     private var floorPlanCard: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             VStack(spacing: 24) {
@@ -269,31 +252,22 @@ struct ChooseParkingSlotView: View {
         .opacity(status == .occupied ? 0.5 : 1)
     }
 
-    // MARK: - Selected slot summary
     private func selectedSummary(_ code: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.title3)
-                .foregroundColor(.blue)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Slot \(code) selected")
-                    .font(.subheadline.bold())
-                Text("\(viewModel.dateLabel) • \(viewModel.timeRangeLabel)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
+        VStack(spacing: 2) {
+            Text("Slot \(code)")
+                .font(.headline)
+            Text("\(viewModel.dateLabel) • \(viewModel.timeRangeLabel)")
+                .font(.subheadline)
+                .foregroundColor(.primary)
         }
-        .padding(14)
+        .frame(maxWidth: .infinity)
+        .padding()
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color.blue.opacity(0.08))
+                .fill(Color(.systemBackground))
         )
     }
 
-    // MARK: - Bottom bar
     private var reserveBar: some View {
         Button {
             if let slot = viewModel.selectedSlotID {
@@ -316,13 +290,15 @@ struct ChooseParkingSlotView: View {
                 
         }
         .disabled(!viewModel.canReserve)
-        .padding()
+        .padding(.horizontal)
         .padding(.bottom, 20)
-        .background(
-            Color(.systemBackground)
-                .shadow(color: .black.opacity(0.05), radius: 8, y: -2)
-                .ignoresSafeArea(edges: .bottom)
-        )
     }
     
+}
+
+#Preview {
+    ChooseParkingSlotView(
+        bookingViewModel: BookingFormViewModel(mall: .sample),
+        viewModel: ParkingLotViewModel(mall: .sample)
+    )
 }

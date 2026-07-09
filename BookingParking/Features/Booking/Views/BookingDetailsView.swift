@@ -14,28 +14,18 @@ struct BookingDetailsView: View {
             ScrollView {
                 VStack(alignment: .leading) {
                     mallInfoSection
-                    
                     Divider().padding(.vertical, 16)
-
-                    
                     bookingDetailsSection
-                    
                     Divider().padding(.vertical, 16)
-                    
                     paymentDetailsSection
-                    
                     lateFeeBanner.padding(.top, 24)
-                    
                 }
                 .padding(.horizontal)
-                
                 bottomBar
                     .padding(.top, 24)
-
             }
         }
         .ignoresSafeArea(edges: .bottom)
-        .navigationBarHidden(false)
         .toolbar(.hidden, for: .tabBar)
     }
     
@@ -51,19 +41,6 @@ struct BookingDetailsView: View {
                         .foregroundColor(.gray.opacity(0.4))
                         .padding(60)
                 )
-            
-//            Button {
-//                dismiss()
-//            } label: {
-//                Image(systemName: "chevron.left")
-//                    .font(.headline)
-//                    .foregroundColor(.black)
-//                    .padding(10)
-//                    .background(Color.white.opacity(0.9))
-//                    .clipShape(Circle())
-//            }
-//            .padding(.top, 50)
-//            .padding(.leading, 16)
         }
     }
     
@@ -179,7 +156,7 @@ struct BookingDetailsView: View {
         .frame(maxWidth: .infinity)
     }
     
-    private var bottomBar: some View { //INI BENERIN LAGI
+    private var bottomBar: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(viewModel.hasBooked ? "Rp \(viewModel.total.formattedThousands())" : "Rp 0")
@@ -197,10 +174,7 @@ struct BookingDetailsView: View {
                 
                 
             }
-//            .padding(.bottom, 1)
-            
             Spacer()
-            
             Button {
                 Task {
                     if let _ = await viewModel.submitBooking() {
@@ -353,8 +327,7 @@ struct VehiclePickerCard: View {
             .animation(.easeInOut(duration: 0.2), value: vehicle)
     }
 }
-//
-//// MARK: - Slot Picker Card
+
 struct SlotPickerCard: View {
     let slotCode: String?
     let timeRangeLabel: String
@@ -436,8 +409,7 @@ struct SlotPickerCard: View {
             .animation(.easeInOut(duration: 0.2), value: slotCode)
     }
 }
-//
-//// MARK: - Reusable Booking Row
+
 struct BookingRow: View {
     let icon: String
     let title: String
