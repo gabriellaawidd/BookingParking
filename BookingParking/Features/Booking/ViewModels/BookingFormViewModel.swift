@@ -103,7 +103,7 @@ class BookingFormViewModel {
                 vehicle: selectedVehicle,
                 voucher: selectedVoucher,
                 paymentMethod: nil,
-                tariffPerHour: pricePerHour,
+                pricePerHour: pricePerHour,
                 duration: durationLabel,
                 total: total
             )
