@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct PaymentSummaryCard: View {
+    enum Style {
+        case grouped 
+        case filled
+    }
+
     let mallName: String
     let slotInfo: String
     let total: Int
     var totalLabel: String = "Total"
-    var style: CardStyle = .filled
-
-    enum CardStyle {
-        case filled
-        case plain
-    }
+    var style: Style = .filled
 
     var body: some View {
         HStack {
@@ -38,10 +38,18 @@ struct PaymentSummaryCard: View {
                     .foregroundStyle(Color.accentColor)
             }
         }
-        .padding(style == .filled ? 16 : 0)
-        .background(style == .filled ? Color(.systemGray6) : Color.clear)
-        .clipShape(style == .filled ? AnyShape(RoundedRectangle(cornerRadius: 16, style: .continuous)) : AnyShape(Rectangle())
-        )
+        .padding()
+        .background(backgroundColor)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+
+    private var backgroundColor: Color {
+        switch style {
+        case .grouped:
+            return Color(.systemGroupedBackground)
+        case .filled:
+            return Color(.systemBackground)
+        }
     }
 }
 
@@ -50,16 +58,17 @@ struct PaymentSummaryCard: View {
         PaymentSummaryCard(
             mallName: "AEON Mall BSD City",
             slotInfo: "B2 · Red Zone · Slot A2",
-            total: 10000,
-            style: .filled
+            total: 10000
         )
+
         PaymentSummaryCard(
             mallName: "AEON Mall BSD City",
             slotInfo: "B2 · Red Zone · Slot A2",
             total: 10000,
             totalLabel: "Total Payment",
-            style: .plain
+            style: .grouped
         )
     }
     .padding()
+    .background(Color(.systemGroupedBackground))
 }

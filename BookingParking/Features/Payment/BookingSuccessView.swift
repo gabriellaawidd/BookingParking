@@ -10,7 +10,7 @@ import SwiftUI
 struct BookingSuccessView: View {
     let booking: Booking
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -26,16 +26,21 @@ struct BookingSuccessView: View {
                         .foregroundStyle(.white)
                 }
                 .padding(.vertical, 20)
-                
+
                 PaymentSummaryCard(
                     mallName: booking.mall.name,
                     slotInfo: booking.slot,
                     total: booking.total,
-                    style: .plain
+                    style: .grouped
                 )
-                
+
                 Divider()
-                
+                    .overlay(
+                        Rectangle()
+                            .stroke(style: StrokeStyle(lineWidth: 1, dash: [4]))
+                            .foregroundStyle(Color(.systemGray4))
+                    )
+
                 VStack(alignment: .leading, spacing: 16) {
                     BookingDetailRow(title: "Date and Time", value: "\(booking.date) · \(booking.timeRange)")
                     BookingDetailRow(title: "Parking Slot", value: booking.slot)
@@ -58,10 +63,11 @@ struct BookingSuccessView: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.primary)
                         .frame(width: 32, height: 32)
+                        .background(Color(.systemGroupedBackground))
                         .clipShape(Circle())
                 }
             }
-        }
+        }.background(Color(.systemGroupedBackground))
     }
 }
 
@@ -73,7 +79,7 @@ struct BookingSuccessView: View {
                 date: "25 April 2025",
                 timeRange: "10AM - 12PM",
                 slot: "B2 · Red Zone · Slot A2",
-                vehicle: Vehicle(name: "Toyota Avanza",licensePlate: "B 5678 CDE"),
+                vehicle: Vehicle(name: "Toyota Avanza", licensePlate: "B 5678 CDE"),
                 voucher: nil,
                 paymentMethod: "QRIS",
                 pricePerHour: 5000,
@@ -81,6 +87,5 @@ struct BookingSuccessView: View {
                 total: 10000
             )
         )
-    }
-    .padding()
+    }.padding()
 }

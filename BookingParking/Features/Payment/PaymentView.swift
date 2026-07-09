@@ -26,7 +26,6 @@ struct PaymentView: View {
                         mallName: viewModel.booking.mall.name,
                         slotInfo: viewModel.booking.slot,
                         total: viewModel.booking.total,
-                        style: .filled
                     )
 
                     QRISPaymentCard(
@@ -58,7 +57,7 @@ struct PaymentView: View {
                 .clipShape(Capsule())
             }
             .disabled(viewModel.isCheckingStatus)
-            .padding()
+            .padding(.horizontal)
         }
         .navigationTitle("Payment")
         .navigationBarTitleDisplayMode(.inline)
@@ -67,6 +66,7 @@ struct PaymentView: View {
                 path.append(viewModel.booking)
             }
         }
+        .background(Color(.systemGroupedBackground))
     }
 }
 

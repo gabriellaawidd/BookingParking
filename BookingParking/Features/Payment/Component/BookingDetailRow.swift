@@ -10,12 +10,11 @@ import SwiftUI
 struct BookingDetailRow: View {
     let title: String
     let value: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.headline)
-            
             Text(value)
                 .font(.subheadline)
         }
@@ -23,6 +22,10 @@ struct BookingDetailRow: View {
 }
 
 #Preview {
-    BookingDetailRow(title: "Date and Time", value: "25 April 2025, 10:00 AM")
-        .padding()
+    VStack(spacing: 10) {
+        BookingDetailRow(title: "Date and Time", value: "25 April 2025 · 10AM - 12PM")
+        BookingDetailRow(title: "Parking Slot", value: "B2 · Red Zone · Slot A2")
+    }
+    .padding()
+    .background(Color(.systemGroupedBackground))
 }

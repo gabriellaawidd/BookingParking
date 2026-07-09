@@ -24,9 +24,6 @@ struct AddVehicleView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
-                Image(systemName: "car.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.primary)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Add Vehicle")

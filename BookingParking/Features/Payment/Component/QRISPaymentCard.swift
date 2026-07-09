@@ -59,7 +59,7 @@ struct QRISPaymentCard: View {
                 .font(.headline)
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
