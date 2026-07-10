@@ -354,7 +354,7 @@ void tampilkanOLED(float jarak) {
 
   display.setCursor(0, 44);
   display.print("Spot  : ");
-  display.println(presence == "occupied" ? "OCCUPIED" : "FREE");
+  display.println(presence == "occupied" ? "FREE" : "OCCUPIED");
 
   display.setCursor(0, 54);
   display.print("Flap  : ");
