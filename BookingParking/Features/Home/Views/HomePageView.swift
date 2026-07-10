@@ -56,7 +56,7 @@ struct HomePageView: View {
                 PaymentView(
                     viewModel: PaymentViewModel(booking: booking, userId: userSession.userId),
                     path: $viewModel.navigationPath,
-                    homeViewModel: $viewModel
+                    homeViewModel: viewModel
                 )
             }
         }

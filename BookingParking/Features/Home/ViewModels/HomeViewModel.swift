@@ -110,10 +110,20 @@ class HomeViewModel {
         mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
     }
     
+//    func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
+//        self.sessionState = newState
+//        if let backendBookingId {
+//            self.activeBookingBackendId = backendBookingId
+//        }
+//        startCountdownIfNeeded()
+//    }
+    
     func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
+        print("🟠 updateSessionState dipanggil, backendBookingId:", backendBookingId as Any)
         self.sessionState = newState
         if let backendBookingId {
             self.activeBookingBackendId = backendBookingId
+            print("🟠 activeBookingBackendId di-set jadi:", backendBookingId)
         }
         startCountdownIfNeeded()
     }

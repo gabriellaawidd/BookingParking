@@ -11,7 +11,7 @@ struct PaymentView: View {
     @State var viewModel: PaymentViewModel
     @Binding var path: NavigationPath
     @State private var showSuccess = false
-    @Binding var homeViewModel: HomeViewModel
+    let homeViewModel: HomeViewModel
 
     var body: some View {
         VStack {
