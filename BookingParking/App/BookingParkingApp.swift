@@ -10,3 +10,4 @@ struct C4_JasJusApp: App {
         }
     }
 }
+

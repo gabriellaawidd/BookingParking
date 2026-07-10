@@ -5,12 +5,6 @@
 //  Created by M. TAQWA ADDARI on 10/07/26.
 //
 
-//
-//  LoyaltyLevelCard.swift
-//  BookingParking
-//
-//  Created by M. TAQWA ADDARI on 10/07/26.
-//
 
 import SwiftUI
 
@@ -18,8 +12,7 @@ struct LoyaltyLevelCard: View {
     var body: some View {
         VStack(spacing: 0) {
             
-            // MARK: - Bagian atas
-            // 1. Spacing dikurangi dari 22 menjadi 12 agar lebih padat
+           
             VStack(alignment: .leading, spacing: 22) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
@@ -71,7 +64,7 @@ struct LoyaltyLevelCard: View {
                     }
                 }
             }
-            // 2. Padding atas dikurangi dari 20 menjadi 16
+           
             .padding(16)
             .background(Color.blue.opacity(0.12))
 
@@ -82,14 +75,14 @@ struct LoyaltyLevelCard: View {
                 benefitItem(icon: "clock.fill", title: "Free\nextra time")
                 benefitItem(icon: "person.2.fill", title: "Partner\nDeals")
             }
-            // 3. Padding bawah dikurangi (Vertical: 12, Horizontal: 16)
+           
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
             .background(Color.white)
             
             Spacer(minLength: 0)
         }
-        // 👉 Frame dipaksa persis 360 x 205
+        
         .frame(width: 360, height: 230)
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .overlay(
@@ -100,15 +93,15 @@ struct LoyaltyLevelCard: View {
     }
 
     private func benefitItem(icon: String, title: String) -> some View {
-        // 4. Spacing antara ikon dan teks dikurangi dari 6 menjadi 4
+        
         VStack(spacing: 4) {
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color(red: 200/255, green: 230/255, blue: 255/255))
-                // 5. Kotak ikon dikecilkan sedikit dari 48 ke 44
+                
                 .frame(width: 44, height: 44)
                 .overlay(
                     Image(systemName: icon)
-                        .font(.system(size: 17)) // Font ikon disesuaikan
+                        .font(.system(size: 17))
                         .foregroundColor(Color(red: 1/255, green: 31/255, blue: 75/255))
                 )
 
