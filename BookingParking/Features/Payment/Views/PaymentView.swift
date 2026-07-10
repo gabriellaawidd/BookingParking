@@ -11,7 +11,7 @@ struct PaymentView: View {
     @State var viewModel: PaymentViewModel
     @Binding var path: NavigationPath
     @State private var showSuccess = false
-    var homeViewModel: HomeViewModel
+    @Binding var homeViewModel: HomeViewModel
 
     var body: some View {
         VStack {
@@ -69,27 +69,27 @@ struct PaymentView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        PaymentView(
-            viewModel: PaymentViewModel(
-                booking: Booking(
-                    mall: .sample,
-                    date: "9 Jul 2026",
-                    timeRange: "14.00 - 16.00",
-                    startDateTime: Date(),
-                    endDateTime: Date().addingTimeInterval(7200),
-                    slot: "B2 · Red Zone · Slot A2",
-                    vehicle: Vehicle(name: "Toyota Avanza", licensePlate: "B 1234 ABC"),
-                    voucher: nil,
-                    paymentMethod: nil,
-                    pricePerHour: 5000,
-                    duration: "2 hours",
-                    total: 10000
-                ), userId: 2
-            ),
-            path: .constant(NavigationPath()),
-            homeViewModel: HomeViewModel()
-        )
-    }
-}
+//#Preview {
+//    NavigationStack {
+//        PaymentView(
+//            viewModel: PaymentViewModel(
+//                booking: Booking(
+//                    mall: .sample,
+//                    date: "9 Jul 2026",
+//                    timeRange: "14.00 - 16.00",
+//                    startDateTime: Date(),
+//                    endDateTime: Date().addingTimeInterval(7200),
+//                    slot: "B2 · Red Zone · Slot A2",
+//                    vehicle: Vehicle(name: "Toyota Avanza", licensePlate: "B 1234 ABC"),
+//                    voucher: nil,
+//                    paymentMethod: nil,
+//                    pricePerHour: 5000,
+//                    duration: "2 hours",
+//                    total: 10000
+//                ), userId: 2
+//            ),
+//            path: .constant(NavigationPath()),
+//            homeViewModel: HomeViewModel()
+//        )
+//    }
+//}

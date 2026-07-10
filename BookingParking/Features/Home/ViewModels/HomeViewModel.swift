@@ -23,6 +23,11 @@ class HomeViewModel {
     var selectedMallID: MallLocation.ID?
     var mapMalls: [MallLocation] = []
     
+    var activeBookingBackendId: Int?
+    
+    var isOpeningSlot = false
+    var errorMessage: String?
+    
     private let mallService: MallLocationServicing
     
     private var countdownCancellable: AnyCancellable?
@@ -105,21 +110,56 @@ class HomeViewModel {
         mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
     }
     
-    func updateSessionState(_ newState: HomeSessionState) {
+    func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
         self.sessionState = newState
+        if let backendBookingId {
+            self.activeBookingBackendId = backendBookingId
+        }
         startCountdownIfNeeded()
     }
     
-    @MainActor
-    func loadMapMalls(userLocation: CLLocationCoordinate2D?) async {
-        mapMalls = (try? await mallService.fetchNearbyMalls(near: userLocation)) ?? []
-    }
+//    @MainActor
+//    func loadMapMalls(userLocation: CLLocationCoordinate2D?) async {
+//        mapMalls = (try? await mallService.fetchNearbyMalls(near: userLocation)) ?? []
+//    }
+//    
+//    func openSlot(service: ParkingServicing = AppEnvironment.parkingService) async {
+//        guard let bookingId = activeBookingBackendId
+//        else {
+//            errorMessage = "No active booking"
+//            return
+//        }
+//        
+//        isOpeningSlot = true
+//        errorMessage = nil
+//        
+//        do {
+//            try await service.openFlap(bookingId: bookingId)
+//        } catch {
+//            errorMessage = error.localizedDescription
+//        }
+//        isOpeningSlot = false
+//    }
     
-    // MARK: - Backend / MQTT (placeholder)
-    // Nanti fungsi ini yang kirim request ke backend (misal POST /session/open-slot),
-    // backend yang publish MQTT command ke ESP32 — app gak connect MQTT langsung.
+    @MainActor
     func openSlot(service: ParkingServicing = AppEnvironment.parkingService) async {
-        // isi backend
+        print("🔵 openSlot dipanggil, activeBookingBackendId:", activeBookingBackendId as Any)
+        guard let bookingId = activeBookingBackendId else {
+            print("❌ tidak ada activeBookingBackendId, STOP")
+            errorMessage = "Tidak ada booking aktif untuk dibuka."
+            return
+        }
+
+        isOpeningSlot = true
+        errorMessage = nil
+        do {
+            try await service.openFlap(bookingId: bookingId)
+            print("✅ Flap opened untuk bookingId:", bookingId)
+        } catch {
+            print("❌ Gagal buka flap:", error.localizedDescription)
+            errorMessage = error.localizedDescription
+        }
+        isOpeningSlot = false
     }
 }
 

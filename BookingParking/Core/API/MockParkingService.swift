@@ -15,12 +15,12 @@ struct MockParkingService: ParkingServicing {
 
     func createUser(name: String) async throws -> UserDTO {
         await simulateDelay()
-        return UserDTO(id: 1, name: name, vehicle: [])
+        return UserDTO(id: 1, name: name, vehicles: [])
     }
 
     func fetchUser(id: Int) async throws -> UserDTO {
         await simulateDelay()
-        return UserDTO(id: id, name: "Mock User", vehicle: [])
+        return UserDTO(id: id, name: "Mock User", vehicles: [])
     }
 
     func registerVehicle(ownerId: Int, plate: String) async throws -> VehicleDTO {

@@ -83,14 +83,15 @@ struct HomePageView: View {
         }
         .onAppear { locationManager.requestLocation() }
         .task {
+            print("🟡 mulai ensureUser")
             do {
                 try await userSession.ensureUser(name: "Taqwa")
-                await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
+                print("🟡 selesai ensureUser, userId:", userSession.userId as Any)
             } catch {
-                errorMessage = error.localizedDescription
+                print("🔴 ensureUser GAGAL:", error)
+                print("🔴 detail:", error.localizedDescription)
             }
-
-            await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
+            await $viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
         }
         .onReceive(locationManager.$currentLocation) { newLocation in
             guard let coordinate = newLocation else { return }
@@ -145,6 +146,7 @@ struct HomePageView: View {
         case .active(let booking):
             ActiveSessionCard(
                 session: booking,
+                isOpeningSlot: viewModel.isOpeningSlot,
                 remainingTime: viewModel.remainingTime,
                 onOpenSlot: {
                     Task{

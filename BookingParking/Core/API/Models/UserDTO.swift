@@ -10,7 +10,7 @@ import Foundation
 struct UserDTO: Codable, Identifiable {
     let id: Int
     let name: String
-    let vehicle: [VehicleDTO]
+    let vehicles: [VehicleDTO]
 }
 
 struct CreateUserRequest: Encodable {
