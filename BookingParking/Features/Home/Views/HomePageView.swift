@@ -56,7 +56,7 @@ struct HomePageView: View {
                 PaymentView(
                     viewModel: PaymentViewModel(booking: booking, userId: userSession.userId),
                     path: $viewModel.navigationPath,
-                    homeViewModel: viewModel
+                    homeViewModel: $viewModel
                 )
             }
         }
@@ -91,7 +91,7 @@ struct HomePageView: View {
                 print("🔴 ensureUser GAGAL:", error)
                 print("🔴 detail:", error.localizedDescription)
             }
-            await $viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
+            await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
         }
         .onReceive(locationManager.$currentLocation) { newLocation in
             guard let coordinate = newLocation else { return }

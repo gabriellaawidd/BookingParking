@@ -118,11 +118,12 @@ class HomeViewModel {
         startCountdownIfNeeded()
     }
     
-//    @MainActor
-//    func loadMapMalls(userLocation: CLLocationCoordinate2D?) async {
-//        mapMalls = (try? await mallService.fetchNearbyMalls(near: userLocation)) ?? []
-//    }
-//    
+    @MainActor
+    func loadMapMalls(userLocation: CLLocationCoordinate2D?) async {
+        mapMalls = (try? await mallService.fetchNearbyMalls(near: userLocation)) ?? []
+    }
+
+//
 //    func openSlot(service: ParkingServicing = AppEnvironment.parkingService) async {
 //        guard let bookingId = activeBookingBackendId
 //        else {
