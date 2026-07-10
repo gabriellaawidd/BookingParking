@@ -98,10 +98,8 @@ class BookingFormViewModel {
             return nil
         }
 
-        guard selectedVehicle.backendId != nil else {
-            errorMessage = "Vehicle has not register to server"
-            return nil
-        }
+
+        
 
         return Booking(
             backendId: nil,

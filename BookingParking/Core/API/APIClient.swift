@@ -8,7 +8,7 @@
 import Foundation
 
 struct APIClient {
-    static let baseURL = URL(string: "https://ski-suspension-announced-broadband.trycloudflare.com")!
+    static let baseURL = URL(string: "http://localhost:8080")!
     
     func post<Body: Encodable, Response: Decodable>(
         _ path: String,

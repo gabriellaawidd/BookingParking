@@ -75,34 +75,47 @@ class PaymentViewModel {
         errorMessage = nil
 
         if booking.backendId == nil {
-            print("🟣 booking.backendId masih nil, mau createBooking")
-            guard let userId, let vehicleBackendId = booking.vehicle.backendId else {
-                print("❌ userId atau vehicleBackendId nil — userId:", userId as Any, "vehicleBackendId:", booking.vehicle.backendId as Any)
+            guard let userId else {
                 errorMessage = "Data booking tidak lengkap."
                 isCheckingStatus = false
                 return
             }
 
-            let durationMinutes = Int(booking.endDateTime.timeIntervalSince(booking.startDateTime) / 60)
-            print("🟣 mau createBooking, userId:", userId, "vehicleId:", vehicleBackendId, "duration:", durationMinutes)
+            // 1. Ensure this vehicle exists on the server for THIS user → get its real id.
+            var vehicleBackendId = booking.vehicle.backendId
+            if vehicleBackendId == nil {
+                do {
+                    let vdto = try await service.registerVehicle(
+                        ownerId: userId,
+                        plate: booking.vehicle.licensePlate
+                    )
+                    booking.vehicle.backendId = vdto.id
+                    vehicleBackendId = vdto.id
+                    print("✅ Vehicle registered, backendId:", vdto.id)
+                } catch {
+                    print("❌ Vehicle register gagal:", error)
+                    errorMessage = error.localizedDescription
+                    isCheckingStatus = false
+                    return
+                }
+            }
 
+            // 2. Create the booking with the REAL vehicle id.
+            let durationMinutes = Int(booking.endDateTime.timeIntervalSince(booking.startDateTime) / 60)
             do {
                 let dto = try await service.createBooking(
                     userId: userId,
-                    vehicleId: vehicleBackendId,
+                    vehicleId: vehicleBackendId!,
                     durationMinutes: durationMinutes
                 )
                 booking.backendId = dto.id
-                print("✅ Booking created saat Refresh Status, backendId:", dto.id, "state:", dto.state)
+                print("✅ Booking created, backendId:", dto.id)
             } catch {
-                print("❌ Booking gagal saat Refresh Status:", error)
-                print("❌ Detail:", error.localizedDescription)
+                print("❌ Booking gagal:", error)
                 errorMessage = error.localizedDescription
                 isCheckingStatus = false
                 return
             }
-        } else {
-            print("🟣 booking.backendId sudah ada:", booking.backendId as Any)
         }
 
         try? await Task.sleep(nanoseconds: 800_000_000)
