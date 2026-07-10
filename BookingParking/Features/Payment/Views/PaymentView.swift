@@ -86,7 +86,7 @@ struct PaymentView: View {
                     pricePerHour: 5000,
                     duration: "2 hours",
                     total: 10000
-                )
+                ), userId: 2
             ),
             path: .constant(NavigationPath()),
             homeViewModel: HomeViewModel()

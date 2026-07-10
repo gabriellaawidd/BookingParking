@@ -11,18 +11,23 @@ import SwiftUI
 
 @Observable
 class PaymentViewModel {
-    let booking: Booking
-
+    var booking: Booking
+    let userId: Int?
+    
     var qrImage: UIImage?
     var remainingSeconds: Int = 15 * 60
     var isCheckingStatus = false
+    var errorMessage: String?
 
     private var timerTask: Task<Void, Never>?
     private let context = CIContext()
     private let filter = CIFilter.qrCodeGenerator()
+    private let service: ParkingServicing
 
-    init(booking: Booking) {
+    init(booking: Booking, userId: Int?, service: ParkingServicing = AppEnvironment.parkingService) {
         self.booking = booking
+        self.userId = userId
+        self.service = service
         generateQR()
         startCountdown()
     }
@@ -65,9 +70,34 @@ class PaymentViewModel {
     }
 
     @MainActor
-    func refreshStatus() async {
-        isCheckingStatus = true
-        try? await Task.sleep(nanoseconds: 800_000_000)
-        isCheckingStatus = false
-    }
-}
+       func refreshStatus() async {
+           isCheckingStatus = true
+           errorMessage = nil
+
+           if booking.backendId == nil {
+               guard let userId, let vehicleBackendId = booking.vehicle.backendId else {
+                   errorMessage = "Data booking tidak lengkap."
+                   isCheckingStatus = false
+                   return
+               }
+
+               let durationMinutes = Int(booking.endDateTime.timeIntervalSince(booking.startDateTime) / 60)
+
+               do {
+                   let dto = try await service.createBooking(
+                       userId: userId,
+                       vehicleId: vehicleBackendId,
+                       durationMinutes: durationMinutes
+                   )
+                   booking.backendId = dto.id
+               } catch {
+                   errorMessage = error.localizedDescription
+                   isCheckingStatus = false
+                   return
+               }
+           }
+
+           try? await Task.sleep(nanoseconds: 800_000_000)
+           isCheckingStatus = false
+       }
+   }

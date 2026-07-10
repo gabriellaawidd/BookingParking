@@ -87,54 +87,36 @@ class BookingFormViewModel {
     }
     
     @MainActor
-    func submitBooking(userId: Int, service: ParkingServicing = AppEnvironment.parkingService) async -> Booking? {
+    func buildDraftBooking() -> Booking? {
         guard isFormValid,
-                let selectedVehicle,
-                let selectedSlot,
-                let startTime,
-                let endTime
+              let selectedVehicle,
+              let selectedSlot,
+              let startTime,
+              let endTime
         else {
             errorMessage = "Please select a vehicle and a slot"
             return nil
         }
-        
-        guard let backendVehicleId = selectedVehicle.backendId else {
-            
+
+        guard selectedVehicle.backendId != nil else {
             errorMessage = "Vehicle has not register to server"
             return nil
         }
-        
-        isSubmitting = true
-        errorMessage = nil
-        defer { isSubmitting = false }
-        
-        do{
-            let dto = try await service.createBooking(
-                userId: userId,
-                vehicleId: backendVehicleId,
-                durationMinutes: durationHours * 60
-            )
-            print("✅ Booking created, backendId:", dto.id, "state:", dto.state)
-            return Booking(
-                backendId: dto.id,
-                mall: mall,
-                date: dateLabel,
-                timeRange: timeRangeLabel,
-                startDateTime: startTime,
-                endDateTime: endTime,
-                slot: selectedSlot,
-                vehicle: selectedVehicle,
-                voucher: selectedVoucher,
-                paymentMethod: nil,
-                pricePerHour: pricePerHour,
-                duration: durationLabel,
-                total: total
-            )
-        }
-        catch{
-            print("❌ Booking failed:", error.localizedDescription)
-            errorMessage = error.localizedDescription
-            return nil
-        }
+
+        return Booking(
+            backendId: nil,
+            mall: mall,
+            date: dateLabel,
+            timeRange: timeRangeLabel,
+            startDateTime: startTime,
+            endDateTime: endTime,
+            slot: selectedSlot,
+            vehicle: selectedVehicle,
+            voucher: selectedVoucher,
+            paymentMethod: nil,
+            pricePerHour: pricePerHour,
+            duration: durationLabel,
+            total: total
+        )
     }
 }

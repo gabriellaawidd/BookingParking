@@ -8,10 +8,9 @@
 import Foundation
 
 enum AppEnvironment {
-    // kalo backend ready ganti jadi false --> ini masi pake mockup
-    nonisolated static let useMockBackend = true
+    static let useMockBackend = false
 
-    nonisolated static var parkingService: ParkingServicing {
+    static var parkingService: ParkingServicing {
         useMockBackend ? MockParkingService() : ParkingService()
     }
 }

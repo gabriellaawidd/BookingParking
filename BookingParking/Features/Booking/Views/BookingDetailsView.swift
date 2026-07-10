@@ -121,17 +121,8 @@ struct BookingDetailsView: View {
             isFormValid: viewModel.isFormValid,
             isSubmitting: viewModel.isSubmitting,
             onPayNow: {
-                Task {
-                    print("🔵 onPayNow ditekan, userId:", userSession.userId as Any)
-                    guard let userId = userSession.userId else {
-                        print("❌ STOP — userId nil")
-                        return
-                    }
-                    print("🔵 lanjut submitBooking")
-                    if let booking = await viewModel.submitBooking(userId: userId) {
-                        path.append(booking)
-                    }
-                }
+                guard let booking = viewModel.buildDraftBooking() else { return }
+                path.append(booking)
             }
         )
     }

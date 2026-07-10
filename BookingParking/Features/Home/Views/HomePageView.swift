@@ -6,6 +6,7 @@ struct HomePageView: View {
     @State var viewModel: HomeViewModel
     @State private var locationManager = LocationManager()
     let userSession: UserSession
+    @State private var errorMessage: String?
     @Environment(\.openURL) private var openURL
 
     var body: some View {
@@ -53,7 +54,7 @@ struct HomePageView: View {
             }
             .navigationDestination(for: Booking.self) { booking in
                 PaymentView(
-                    viewModel: PaymentViewModel(booking: booking),
+                    viewModel: PaymentViewModel(booking: booking, userId: userSession.userId),
                     path: $viewModel.navigationPath,
                     homeViewModel: viewModel
                 )
@@ -82,13 +83,11 @@ struct HomePageView: View {
         }
         .onAppear { locationManager.requestLocation() }
         .task {
-            print("🟡 mulai ensureUser")
-            do{
-                try await userSession.ensureUser(name:"Taqwa")
-                print("🟡 selesai ensureUser, userId:", userSession.userId as Any)
-            }catch{
-                print("🔴 ensureUser GAGAL:", error)
-                print("🔴 detail:", error.localizedDescription)
+            do {
+                try await userSession.ensureUser(name: "Taqwa")
+                await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
+            } catch {
+                errorMessage = error.localizedDescription
             }
 
             await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
