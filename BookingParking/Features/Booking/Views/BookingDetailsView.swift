@@ -5,6 +5,7 @@ struct BookingDetailsView: View {
     @State var viewModel: BookingFormViewModel
     @State private var showAddVehicleSheet: Bool = false
     @Environment(\.dismiss) private var dismiss
+    let userSession: UserSession
     
     var body: some View {
         VStack(spacing: 0) {
@@ -121,7 +122,13 @@ struct BookingDetailsView: View {
             isSubmitting: viewModel.isSubmitting,
             onPayNow: {
                 Task {
-                    if let booking = await viewModel.submitBooking() {
+                    print("🔵 onPayNow ditekan, userId:", userSession.userId as Any)
+                    guard let userId = userSession.userId else {
+                        print("❌ STOP — userId nil")
+                        return
+                    }
+                    print("🔵 lanjut submitBooking")
+                    if let booking = await viewModel.submitBooking(userId: userId) {
                         path.append(booking)
                     }
                 }
@@ -132,6 +139,7 @@ struct BookingDetailsView: View {
 
 #Preview {
     NavigationStack {
-        BookingDetailsView(path: .constant(NavigationPath()), viewModel: BookingFormViewModel(mall: .sample))
+        BookingDetailsView(path: .constant(NavigationPath()), viewModel: BookingFormViewModel(mall: .sample), userSession: UserSession())
     }
 }
+

@@ -18,7 +18,7 @@ class UserSession {
     }
 
     @MainActor
-    func ensureUser(name: String) async throws {
+    func ensureUser(name: String, service: ParkingServicing = AppEnvironment.parkingService) async throws {
         guard userId == nil else { return }
 
         let service = ParkingService()

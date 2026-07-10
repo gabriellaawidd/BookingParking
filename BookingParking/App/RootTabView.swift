@@ -10,12 +10,13 @@ import SwiftUI
 struct RootTabView: View {
     @Binding var selectedTab: String
     @State var viewModel: HomeViewModel
+    @State private var userSession = UserSession()
     @State private var previousTab: String = "Home"
 
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Home", systemImage: "house.fill", value: "Home") {
-                HomePageView(selectedTab: $selectedTab, viewModel: viewModel)
+                HomePageView(selectedTab: $selectedTab, viewModel: viewModel, userSession: userSession)
             }
 
             Tab("Ticket", systemImage: "ticket.fill", value: "Ticket") {

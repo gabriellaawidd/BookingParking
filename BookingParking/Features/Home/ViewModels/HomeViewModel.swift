@@ -118,9 +118,28 @@ class HomeViewModel {
     // MARK: - Backend / MQTT (placeholder)
     // Nanti fungsi ini yang kirim request ke backend (misal POST /session/open-slot),
     // backend yang publish MQTT command ke ESP32 — app gak connect MQTT langsung.
-    func openSlot() {
+    func openSlot(service: ParkingServicing = AppEnvironment.parkingService) async {
         // isi backend
     }
 }
 
+//
+//struct BookingAPIModel: Codable {
+//    let id: Int
+//    let state: String
+//    let startTime: Int      // unix timestamp
+//    let endTime: Int
+//    let plannedDuration: Int
+//
+//    var startDate: Date { Date(timeIntervalSince1970: TimeInterval(startTime)) }
+//    var endDate: Date { Date(timeIntervalSince1970: TimeInterval(endTime)) }
+//}
+
+//func askmdlsa() {
+//    // hit book
+//    let response: BookingAPIModel // data dari backend
+//    
+//    // di map ke model UI
+//    let booking = Booking(mall: <#T##MallLocation#>, date: <#T##String#>, timeRange: <#T##String#>, startDateTime: response.startDate, endDateTime: response.endDate, slot: flopId, vehicle: <#T##Vehicle#>, pricePerHour: <#T##Int#>, duration: <#T##String#>, total: <#T##Int#>)
+//}
 

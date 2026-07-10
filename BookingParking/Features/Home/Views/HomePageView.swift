@@ -5,6 +5,7 @@ struct HomePageView: View {
     @Binding var selectedTab: String
     @State var viewModel: HomeViewModel
     @State private var locationManager = LocationManager()
+    let userSession: UserSession
     @Environment(\.openURL) private var openURL
 
     var body: some View {
@@ -46,7 +47,8 @@ struct HomePageView: View {
             .navigationDestination(for: MallLocation.self) { mall in
                 BookingDetailsView(
                     path: $viewModel.navigationPath,
-                    viewModel: BookingFormViewModel(mall: mall)
+                    viewModel: BookingFormViewModel(mall: mall),
+                    userSession: userSession
                 )
             }
             .navigationDestination(for: Booking.self) { booking in
@@ -80,6 +82,15 @@ struct HomePageView: View {
         }
         .onAppear { locationManager.requestLocation() }
         .task {
+            print("🟡 mulai ensureUser")
+            do{
+                try await userSession.ensureUser(name:"Taqwa")
+                print("🟡 selesai ensureUser, userId:", userSession.userId as Any)
+            }catch{
+                print("🔴 ensureUser GAGAL:", error)
+                print("🔴 detail:", error.localizedDescription)
+            }
+
             await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
         }
         .onReceive(locationManager.$currentLocation) { newLocation in
@@ -136,7 +147,11 @@ struct HomePageView: View {
             ActiveSessionCard(
                 session: booking,
                 remainingTime: viewModel.remainingTime,
-                onOpenSlot: { viewModel.openSlot() },
+                onOpenSlot: {
+                    Task{
+                        await viewModel.openSlot()
+                    }
+                },
                 onCallStaff: {
                     if let staffNumber = booking.staffNumber {
                         viewModel.callStaff(phoneNumber: staffNumber, openURL: openURL)

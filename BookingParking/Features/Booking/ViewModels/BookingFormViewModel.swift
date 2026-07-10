@@ -86,13 +86,21 @@ class BookingFormViewModel {
         selectedVehicle = vehicle
     }
     
-    func submitBooking() async -> Booking? {
+    @MainActor
+    func submitBooking(userId: Int, service: ParkingServicing = AppEnvironment.parkingService) async -> Booking? {
         guard isFormValid,
-              let selectedVehicle,
-              let selectedSlot,
-              let startTime,
-              let endTime
+                let selectedVehicle,
+                let selectedSlot,
+                let startTime,
+                let endTime
         else {
+            errorMessage = "Please select a vehicle and a slot"
+            return nil
+        }
+        
+        guard let backendVehicleId = selectedVehicle.backendId else {
+            
+            errorMessage = "Vehicle has not register to server"
             return nil
         }
         
@@ -100,9 +108,15 @@ class BookingFormViewModel {
         errorMessage = nil
         defer { isSubmitting = false }
         
-        do {
-            try await Task.sleep(nanoseconds: 500_000_000)
+        do{
+            let dto = try await service.createBooking(
+                userId: userId,
+                vehicleId: backendVehicleId,
+                durationMinutes: durationHours * 60
+            )
+            print("✅ Booking created, backendId:", dto.id, "state:", dto.state)
             return Booking(
+                backendId: dto.id,
                 mall: mall,
                 date: dateLabel,
                 timeRange: timeRangeLabel,
@@ -116,7 +130,9 @@ class BookingFormViewModel {
                 duration: durationLabel,
                 total: total
             )
-        } catch {
+        }
+        catch{
+            print("❌ Booking failed:", error.localizedDescription)
             errorMessage = error.localizedDescription
             return nil
         }
