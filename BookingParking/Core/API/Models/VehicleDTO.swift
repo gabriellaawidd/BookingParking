@@ -8,7 +8,7 @@
 import Foundation
 
 struct VehicleDTO: Codable, Identifiable {
-    let id: String
+    let id: Int
     let ownerId: Int
     let plate: String
 }

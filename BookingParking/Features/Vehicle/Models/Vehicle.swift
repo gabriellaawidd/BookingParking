@@ -12,8 +12,13 @@ struct Vehicle: Identifiable, Equatable, Hashable {
 
 extension Vehicle {
     static let registered: [Vehicle] = [
-        Vehicle(name: "Toyota Avanza", licensePlate: "B 5678 CDE"),
+        
+        Vehicle (name: "Toyota Avanza", licensePlate: "B 5678 CDE"),
         Vehicle(name: "Toyota Rush", licensePlate: "B 9808 BGD"),
         Vehicle(name: "Honda Brio", licensePlate: "B 0928 DGF")
+
+//        Vehicle(name: "Toyota Avanza", licensePlate: "B 5678 CDE"),
+//        Vehicle(name: "Toyota Rush", licensePlate: "B 9808 BGD"),
+//        Vehicle(name: "Honda Brio", licensePlate: "B 0928 DGF")
     ]
 }

@@ -73,10 +73,17 @@ struct BookingSuccessView: View {
         .padding()
     }
     
+//    private func goToHomeWithUpcomingSession() {
+//        homeViewModel.updateSessionState(.upcoming(booking), backendBookingId: booking.backendId)
+//           path.removeLast(path.count)
+//       }
+    
     private func goToHomeWithUpcomingSession() {
-           homeViewModel.updateSessionState(.upcoming(booking))
-           path.removeLast(path.count)
-       }
+        print("🟠 kembali ke Home, backendId:", booking.backendId as Any)
+        homeViewModel.updateSessionState(.upcoming(booking), backendBookingId: booking.backendId)
+        path.removeLast(path.count)
+    }
+    
 }
 
 #Preview {

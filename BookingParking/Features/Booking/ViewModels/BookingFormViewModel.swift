@@ -86,39 +86,35 @@ class BookingFormViewModel {
         selectedVehicle = vehicle
     }
     
-    func submitBooking() async -> Booking? {
+    @MainActor
+    func buildDraftBooking() -> Booking? {
         guard isFormValid,
               let selectedVehicle,
               let selectedSlot,
               let startTime,
               let endTime
         else {
+            errorMessage = "Please select a vehicle and a slot"
             return nil
         }
+
+
         
-        isSubmitting = true
-        errorMessage = nil
-        defer { isSubmitting = false }
-        
-        do {
-            try await Task.sleep(nanoseconds: 500_000_000)
-            return Booking(
-                mall: mall,
-                date: dateLabel,
-                timeRange: timeRangeLabel,
-                startDateTime: startTime,
-                endDateTime: endTime,
-                slot: selectedSlot,
-                vehicle: selectedVehicle,
-                voucher: selectedVoucher,
-                paymentMethod: nil,
-                pricePerHour: pricePerHour,
-                duration: durationLabel,
-                total: total
-            )
-        } catch {
-            errorMessage = error.localizedDescription
-            return nil
-        }
+
+        return Booking(
+            backendId: nil,
+            mall: mall,
+            date: dateLabel,
+            timeRange: timeRangeLabel,
+            startDateTime: startTime,
+            endDateTime: endTime,
+            slot: selectedSlot,
+            vehicle: selectedVehicle,
+            voucher: selectedVoucher,
+            paymentMethod: nil,
+            pricePerHour: pricePerHour,
+            duration: durationLabel,
+            total: total
+        )
     }
 }
