@@ -21,12 +21,13 @@ struct VehicleSelectionRow: View {
                         .foregroundStyle(.primary)
 
                     Text(vehicle.licensePlate)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 8)
+                        .font(.subheadline)
+                        .foregroundStyle(.black)
+                        .foregroundColor(.gray)
+                        .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(Color(.systemGray5))
-                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .cornerRadius(4)
                 }
 
                 Spacer()

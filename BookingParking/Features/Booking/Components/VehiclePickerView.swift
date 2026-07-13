@@ -70,8 +70,9 @@ struct VehiclePickerView: View {
                     .font(.body)
                     .foregroundColor(.primary)
                 Text(vehicle.licensePlate)
-                    .font(.caption2.bold())
-                    .foregroundColor(.black)
+                    .font(.subheadline)
+                    .foregroundStyle(.black)
+                    .foregroundColor(.gray)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(Color(.systemGray5))
@@ -106,6 +107,7 @@ struct VehiclePickerView: View {
         .transition(.opacity.combined(with: .move(edge: .top)))
     }
 }
+
 
 private struct AddVehicleButton: View {
     let action: () -> Void
