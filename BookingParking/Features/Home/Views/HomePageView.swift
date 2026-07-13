@@ -85,13 +85,9 @@ struct HomePageView: View {
         }
         .onAppear { locationManager.requestLocation() }
         .task {
-            print("🟡 mulai ensureUser")
             do {
                 try await userSession.ensureUser(name: "Taqwa")
-                print("🟡 selesai ensureUser, userId:", userSession.userId as Any)
             } catch {
-                print("🔴 ensureUser GAGAL:", error)
-                print("🔴 detail:", error.localizedDescription)
             }
             await viewModel.loadMapMalls(userLocation: locationManager.currentLocation)
         }

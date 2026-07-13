@@ -110,39 +110,16 @@ class HomeViewModel {
         mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
     }
     
-//    func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
-//        self.sessionState = newState
-//        if let backendBookingId {
-//            self.activeBookingBackendId = backendBookingId
-//        }
-//        startCountdownIfNeeded()
-//    }
-    
-//    func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
-//        print("🟠 updateSessionState dipanggil, backendBookingId:", backendBookingId as Any)
-//        self.sessionState = newState
-//        if let backendBookingId {
-//            self.activeBookingBackendId = backendBookingId
-//            print("🟠 activeBookingBackendId di-set jadi:", backendBookingId)
-//        }
-//        startCountdownIfNeeded()
-//    }
-    
     func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
-        print("🟠 updateSessionState dipanggil, backendBookingId:", backendBookingId as Any)
-
-        // Kalau sekarang ada ACTIVE session yang belum selesai, jangan ditimpa
         if case .active(let currentBooking) = sessionState,
            currentBooking.endDateTime > .now,
            case .upcoming = newState {
-            print("🟠 Ada active session yang masih berjalan, sessionState TIDAK diubah")
             return
         }
 
         self.sessionState = newState
         if let backendBookingId {
             self.activeBookingBackendId = backendBookingId
-            print("🟠 activeBookingBackendId di-set jadi:", backendBookingId)
         }
         startCountdownIfNeeded()
     }
@@ -151,31 +128,10 @@ class HomeViewModel {
     func loadMapMalls(userLocation: CLLocationCoordinate2D?) async {
         mapMalls = (try? await mallService.fetchNearbyMalls(near: userLocation)) ?? []
     }
-
-//
-//    func openSlot(service: ParkingServicing = AppEnvironment.parkingService) async {
-//        guard let bookingId = activeBookingBackendId
-//        else {
-//            errorMessage = "No active booking"
-//            return
-//        }
-//        
-//        isOpeningSlot = true
-//        errorMessage = nil
-//        
-//        do {
-//            try await service.openFlap(bookingId: bookingId)
-//        } catch {
-//            errorMessage = error.localizedDescription
-//        }
-//        isOpeningSlot = false
-//    }
     
     @MainActor
     func openSlot(service: ParkingServicing = AppEnvironment.parkingService) async {
-        print("🔵 openSlot dipanggil, activeBookingBackendId:", activeBookingBackendId as Any)
         guard let bookingId = activeBookingBackendId else {
-            print("❌ tidak ada activeBookingBackendId, STOP")
             errorMessage = "Tidak ada booking aktif untuk dibuka."
             return
         }
@@ -184,32 +140,9 @@ class HomeViewModel {
         errorMessage = nil
         do {
             try await service.openFlap(bookingId: bookingId)
-            print("✅ Flap opened untuk bookingId:", bookingId)
         } catch {
-            print("❌ Gagal buka flap:", error.localizedDescription)
             errorMessage = error.localizedDescription
         }
         isOpeningSlot = false
     }
 }
-
-//
-//struct BookingAPIModel: Codable {
-//    let id: Int
-//    let state: String
-//    let startTime: Int      // unix timestamp
-//    let endTime: Int
-//    let plannedDuration: Int
-//
-//    var startDate: Date { Date(timeIntervalSince1970: TimeInterval(startTime)) }
-//    var endDate: Date { Date(timeIntervalSince1970: TimeInterval(endTime)) }
-//}
-
-//func askmdlsa() {
-//    // hit book
-//    let response: BookingAPIModel // data dari backend
-//    
-//    // di map ke model UI
-//    let booking = Booking(mall: <#T##MallLocation#>, date: <#T##String#>, timeRange: <#T##String#>, startDateTime: response.startDate, endDateTime: response.endDate, slot: flopId, vehicle: <#T##Vehicle#>, pricePerHour: <#T##Int#>, duration: <#T##String#>, total: <#T##Int#>)
-//}
-

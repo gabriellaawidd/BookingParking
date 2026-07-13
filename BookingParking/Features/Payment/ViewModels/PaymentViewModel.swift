@@ -8,6 +8,7 @@
 import Foundation
 import CoreImage.CIFilterBuiltins
 import SwiftUI
+import UIKit
 
 @Observable
 class PaymentViewModel {
@@ -81,7 +82,6 @@ class PaymentViewModel {
                 return
             }
 
-            // 1. Ensure this vehicle exists on the server for THIS user → get its real id.
             var vehicleBackendId = booking.vehicle.backendId
             if vehicleBackendId == nil {
                 do {
@@ -91,16 +91,13 @@ class PaymentViewModel {
                     )
                     booking.vehicle.backendId = vdto.id
                     vehicleBackendId = vdto.id
-                    print("✅ Vehicle registered, backendId:", vdto.id)
                 } catch {
-                    print("❌ Vehicle register gagal:", error)
                     errorMessage = error.localizedDescription
                     isCheckingStatus = false
                     return
                 }
             }
 
-            // 2. Create the booking with the REAL vehicle id.
             let durationMinutes = Int(booking.endDateTime.timeIntervalSince(booking.startDateTime) / 60)
             do {
                 let dto = try await service.createBooking(
@@ -109,9 +106,7 @@ class PaymentViewModel {
                     durationMinutes: durationMinutes
                 )
                 booking.backendId = dto.id
-                print("✅ Booking created, backendId:", dto.id)
             } catch {
-                print("❌ Booking gagal:", error)
                 errorMessage = error.localizedDescription
                 isCheckingStatus = false
                 return
