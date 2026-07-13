@@ -28,6 +28,8 @@ class HomeViewModel {
     var isOpeningSlot = false
     var errorMessage: String?
     
+    let notificationManager = NotificationManager()
+    
     private let mallService: MallLocationServicing
     
     private var countdownCancellable: AnyCancellable?
@@ -118,6 +120,11 @@ class HomeViewModel {
         }
 
         self.sessionState = newState
+        
+        if case .upcoming(let booking) = newState {
+                notificationManager.scheduleEndingSoonNotifications(for: booking)
+            }
+        
         if let backendBookingId {
             self.activeBookingBackendId = backendBookingId
         }
