@@ -30,7 +30,6 @@ struct VehiclePickerView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(Color.gray)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 16))
             .animation(.easeInOut(duration: 0.2), value: isExpanded)
             
             if isExpanded {
