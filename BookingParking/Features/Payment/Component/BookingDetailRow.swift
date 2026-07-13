@@ -12,17 +12,11 @@ struct BookingDetailRow: View {
     let value: String
 
     var body: some View {
-        HStack {
+        VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            Spacer()
-
+                .font(.headline)
             Text(value)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.trailing)
+                .font(.subheadline)
         }
     }
 }

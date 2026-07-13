@@ -15,7 +15,7 @@ struct RootTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Booking", systemImage: "calendar.badge.clock", value: "Home") {
+            Tab("Home", systemImage: "house.fill", value: "Home") {
                 HomePageView(selectedTab: $selectedTab, viewModel: viewModel, userSession: userSession)
             }
 

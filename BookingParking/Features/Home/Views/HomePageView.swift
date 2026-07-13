@@ -112,7 +112,7 @@ struct HomePageView: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
 
-                Text("Book your parking space") 
+                Text("Search mall")
                     .foregroundStyle(.secondary)
 
                 Spacer()
