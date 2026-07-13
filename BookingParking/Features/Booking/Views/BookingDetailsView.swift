@@ -134,6 +134,15 @@ struct BookingDetailsView: View {
     }
 }
 
+extension Int {
+    func formattedThousands() -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = "."
+        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
+    }
+}
+
 #Preview {
     NavigationStack {
         BookingDetailsView(path: .constant(NavigationPath()), viewModel: BookingFormViewModel(mall: .sample), userSession: UserSession())

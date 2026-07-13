@@ -12,6 +12,7 @@ struct BookingSuccessView: View {
     @Binding var path: NavigationPath
     var homeViewModel: HomeViewModel
     @Environment(\.dismiss) private var dismiss
+    var bookingStore: BookingStore
 
     var body: some View {
         NavigationStack {
@@ -75,6 +76,7 @@ struct BookingSuccessView: View {
     }
 
     private func goToHomeWithUpcomingSession() {
+        bookingStore.add(booking)
         homeViewModel.updateSessionState(.upcoming(booking), backendBookingId: booking.backendId)
         path.removeLast(path.count)
         dismiss()
@@ -98,6 +100,7 @@ struct BookingSuccessView: View {
             total: 10000
         ),
         path: .constant(NavigationPath()),
-        homeViewModel: HomeViewModel()
+        homeViewModel: HomeViewModel(),
+        bookingStore: BookingStore()
     )
 }

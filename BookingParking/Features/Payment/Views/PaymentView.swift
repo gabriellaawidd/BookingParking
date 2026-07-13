@@ -12,6 +12,7 @@ struct PaymentView: View {
     @Binding var path: NavigationPath
     @State private var showSuccess = false
     let homeViewModel: HomeViewModel
+    var bookingStore: BookingStore
 
     var body: some View {
         VStack {
@@ -59,7 +60,8 @@ struct PaymentView: View {
             BookingSuccessView(
                 booking: viewModel.booking,
                 path: $path,
-                homeViewModel: homeViewModel
+                homeViewModel: homeViewModel,
+                bookingStore: bookingStore
             )
             .presentationDetents([.height(500)])
             .presentationDragIndicator(.hidden)

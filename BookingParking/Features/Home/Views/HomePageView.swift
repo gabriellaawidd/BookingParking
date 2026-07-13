@@ -8,6 +8,7 @@ struct HomePageView: View {
     let userSession: UserSession
     @State private var errorMessage: String?
     @Environment(\.openURL) private var openURL
+    var bookingStore: BookingStore
 
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
@@ -56,7 +57,8 @@ struct HomePageView: View {
                 PaymentView(
                     viewModel: PaymentViewModel(booking: booking, userId: userSession.userId),
                     path: $viewModel.navigationPath,
-                    homeViewModel: viewModel
+                    homeViewModel: viewModel,
+                    bookingStore: bookingStore
                 )
             }
         }

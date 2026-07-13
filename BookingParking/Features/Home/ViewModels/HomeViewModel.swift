@@ -118,8 +118,27 @@ class HomeViewModel {
 //        startCountdownIfNeeded()
 //    }
     
+//    func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
+//        print("🟠 updateSessionState dipanggil, backendBookingId:", backendBookingId as Any)
+//        self.sessionState = newState
+//        if let backendBookingId {
+//            self.activeBookingBackendId = backendBookingId
+//            print("🟠 activeBookingBackendId di-set jadi:", backendBookingId)
+//        }
+//        startCountdownIfNeeded()
+//    }
+    
     func updateSessionState(_ newState: HomeSessionState, backendBookingId: Int? = nil) {
         print("🟠 updateSessionState dipanggil, backendBookingId:", backendBookingId as Any)
+
+        // Kalau sekarang ada ACTIVE session yang belum selesai, jangan ditimpa
+        if case .active(let currentBooking) = sessionState,
+           currentBooking.endDateTime > .now,
+           case .upcoming = newState {
+            print("🟠 Ada active session yang masih berjalan, sessionState TIDAK diubah")
+            return
+        }
+
         self.sessionState = newState
         if let backendBookingId {
             self.activeBookingBackendId = backendBookingId

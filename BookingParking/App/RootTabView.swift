@@ -12,16 +12,21 @@ struct RootTabView: View {
     @State var viewModel: HomeViewModel
     @State private var userSession = UserSession()
     @State private var previousTab: String = "Home"
+    @State private var bookingStore = BookingStore()
 
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Book", systemImage: "calendar.badge.clock", value: "Home") {
-                HomePageView(selectedTab: $selectedTab, viewModel: viewModel, userSession: userSession)
+                HomePageView(selectedTab: $selectedTab,
+                             viewModel: viewModel,
+                             userSession: userSession,
+                             bookingStore: bookingStore
+                )
             }
 
             Tab("Ticket", systemImage: "ticket.fill", value: "Ticket") {
                 NavigationStack {
-                    TicketPageView()
+                    TicketPageView(bookingStore: bookingStore)  
                 }
             }
 
