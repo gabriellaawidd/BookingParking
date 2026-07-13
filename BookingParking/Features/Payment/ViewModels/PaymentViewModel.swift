@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreImage.CIFilterBuiltins
+import CoreGraphics
 import SwiftUI
 import UIKit
 
