@@ -32,7 +32,7 @@ class SearchMallViewModel {
     }
 
     var sectionTitle: String {
-        query.trimmingCharacters(in: .whitespaces).isEmpty ? "Nearby" : "Hasil pencarian"
+        query.trimmingCharacters(in: .whitespaces).isEmpty ? "Nearby" : "Search Result"
     }
 
     @MainActor
@@ -42,7 +42,7 @@ class SearchMallViewModel {
         do {
             nearbyMalls = try await service.fetchNearbyMalls(near: userLocation)
         } catch {
-            errorMessage = "Gagal memuat data mall. Coba lagi."
+            errorMessage = "Couldn't load mall data. Try again."
         }
         isLoading = false
     }

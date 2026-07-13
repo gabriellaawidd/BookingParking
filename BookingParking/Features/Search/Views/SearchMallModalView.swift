@@ -53,9 +53,9 @@ struct SearchMallModalView: View {
         }
         .padding(12)
         .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .padding(.horizontal)
-        .padding(.top, 16)
+        .padding(.top, 22)
     }
 
     private var sectionHeader: some View {
@@ -65,7 +65,7 @@ struct SearchMallModalView: View {
             Spacer()
         }
         .padding(.horizontal)
-        .padding(.top, 20)
+        .padding(.top, 18)
         .padding(.bottom, 8)
     }
 
@@ -80,7 +80,7 @@ struct SearchMallModalView: View {
                 .font(.caption)
                 .padding()
         } else if viewModel.results.isEmpty {
-            Text("Tidak ada mall ditemukan")
+            Text("No malls found.")
                 .foregroundStyle(.secondary)
                 .font(.subheadline)
                 .padding(.top, 40)
@@ -93,7 +93,7 @@ struct SearchMallModalView: View {
                     MallCard(mall: mall)
                 }
                 .buttonStyle(.plain)
-                .listRowInsets(EdgeInsets(top: 4, leading: 14, bottom: 4, trailing: 14))
+                .listRowInsets(EdgeInsets(top: 6, leading: 14, bottom: 6, trailing: 14))
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
             }

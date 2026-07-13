@@ -108,7 +108,7 @@ struct HomePageView: View {
         Button {
             viewModel.showSearchSheet = true
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: 18) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
 
@@ -118,7 +118,7 @@ struct HomePageView: View {
                 Spacer()
             }
             .padding(12)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .shadow(color: .black.opacity(0.08), radius: 6, y: 2)
         }
         .buttonStyle(.plain)
