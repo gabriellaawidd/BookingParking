@@ -21,7 +21,7 @@ struct VehicleSelectionRow: View {
                         .foregroundStyle(.primary)
 
                     Text(vehicle.licensePlate)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)

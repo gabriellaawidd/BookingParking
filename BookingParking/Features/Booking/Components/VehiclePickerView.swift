@@ -70,7 +70,7 @@ struct VehiclePickerView: View {
                     .font(.body)
                     .foregroundColor(.primary)
                 Text(vehicle.licensePlate)
-                    .font(.caption2.bold())
+                    .font(.subheadline.bold())
                     .foregroundColor(.black)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)

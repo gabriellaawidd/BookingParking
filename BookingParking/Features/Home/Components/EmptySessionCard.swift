@@ -16,20 +16,20 @@ struct EmptySessionCard: View {
                 Text("You have no active session yet.")
                     .font(.body)
                     .foregroundColor(.gray)
-                Text("Let's book your parking spot now!")
+                Text("Search and book your spot!")
                     .font(.caption)
                     .foregroundColor(.gray)
             }
             
-            Button(action: onBookNow) {
-                Text("Book Now")
-                    .font(.subheadline.bold())
-                    .foregroundColor(.white)
-                    .frame(width: 160)
-                    .padding(.vertical, 14)
-                    .background(Color.blue)
-                    .cornerRadius(24)
-            }
+//            Button(action: onBookNow) {
+//                Text("Book Now")
+//                    .font(.subheadline.bold())
+//                    .foregroundColor(.white)
+//                    .frame(width: 160)
+//                    .padding(.vertical, 14)
+//                    .background(Color.blue)
+//                    .cornerRadius(24)
+//            }
         }
         .sessionCardStyle()
     }

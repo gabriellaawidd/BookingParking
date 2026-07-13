@@ -19,7 +19,7 @@ struct ProfilePageView: View {
                     
                     VStack(alignment: .leading, spacing: 28) {
                         
-                        
+                         
                         ProfileHeader(
                             initials: "J",
                             name: "Judy",
