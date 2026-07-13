@@ -12,19 +12,23 @@ struct BookingDetailRow: View {
     let value: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        HStack {
             Text(title)
                 .font(.headline)
+                .foregroundStyle(.secondary)
+            
+            Spacer()
+            
             Text(value)
-                .font(.subheadline)
+                .font(.headline)
+                .foregroundStyle(.primary)
         }
     }
 }
 
 #Preview {
-    VStack(spacing: 10) {
-        BookingDetailRow(title: "Date and Time", value: "25 April 2025 · 10AM - 12PM")
-        BookingDetailRow(title: "Parking Slot", value: "B2 · Red Zone · Slot A2")
+    HStack {
+        BookingDetailRow(title: "Date and Time", value: "25 April 2025")
     }
     .padding()
 }
